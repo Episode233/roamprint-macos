@@ -17,7 +17,11 @@
 
 ## 在 GitHub 生成安装包
 
-1. 打开 https://github.com/new，重新创建仓库，可继续命名为 `roamprint-macos`，勾选 **Add a README file**。
+现有 [roamprint-macos 仓库](https://github.com/Episode233/roamprint-macos) 已成功构建，可直接下载 [RoamPrint-arm64](https://github.com/Episode233/roamprint-macos/actions/runs/38847016854/artifacts/12023915945)，或进入 Actions 重新运行。下载需登录 GitHub，产物保留 30 天。现有仓库直接维护展开的源码，无需上传本构建包。
+
+以下步骤用于将构建包上传到另一个仓库：
+
+1. 打开 https://github.com/new，创建仓库，勾选 **Add a README file**。
 2. 在仓库的 **Code → Add file → Upload files** 上传 **RoamPrint-source.zip**，点击 **Commit changes**。这个 ZIP 要直接出现在仓库根目录，**不要解压它，也不要上传外层 build-kit ZIP**。
 3. 用文本编辑器打开 **macos-build.yml**，复制全部内容。回到 GitHub，选择 **Add file → Create new file**，文件名完整填写：
 
@@ -30,7 +34,7 @@
 4. 进入 **Actions → Build macOS ARM64**。提交工作流后会自动开始；未自动开始时点击 **Run workflow → Run workflow**。
 5. 等运行变绿，打开该次运行，在底部 **Artifacts** 下载 **RoamPrint-arm64**。解压得到 **RoamPrint-0.2.0-arm64.pkg**，双击安装。
 
-若运行变红，打开失败步骤查看错误，或下载 **RoamPrint-build-log**。构建时不需要填写或上传打印账号密码。
+若运行变红，查看 Actions 注释中的 Swift 诊断和失败日志末尾，或下载 **RoamPrint-build-log** 查看完整日志。构建时不需要填写或上传打印账号密码。
 
 以后更新源码，只需用同名 `RoamPrint-source.zip` 覆盖仓库根目录里的旧文件并提交，就会再次构建。如新版也修改了工作流，再用新版 `macos-build.yml` 内容更新网页上的工作流文件。
 
@@ -46,6 +50,6 @@
 
 ## 当前验证状态
 
-41 项核心测试已通过；GitHub 工作流已通过静态检查。当前开发环境是 Linux，尚未执行真实 Mac 编译、安装和内网刷卡测试。此包是云端构建所需的源码和配置，实际 `.pkg` 由上述 GitHub 构建生成。
+Linux 41 项核心测试已通过。2026-10-16 的 [GitHub macOS 15 ARM64 构建](https://github.com/Episode233/roamprint-macos/actions/runs/38847016854) 也已通过完整测试（含真实钥匙串测试）、发布编译、架构检查、应用签名校验、PKG 打包及产物上传。用户 macOS 27.0 上的安装、打印菜单和内网刷卡取件仍需实测。此构建包提供源码和配置，实际 `.pkg` 可从上述成功构建下载。
 
 默认应用使用 ad-hoc 签名，安装包未做 Apple 公证。若 macOS 拦截已确认来源的下载文件，可在“系统设置 → 隐私与安全性”中选择“仍要打开”。无需全局关闭系统安全设置。

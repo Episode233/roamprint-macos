@@ -19,6 +19,10 @@
 
 ## GitHub 云端构建，无需本地开发环境
 
+现有仓库已成功完成 [macOS ARM64 构建](https://github.com/Episode233/roamprint-macos/actions/runs/38847016854)。可直接下载 [RoamPrint-arm64 安装包](https://github.com/Episode233/roamprint-macos/actions/runs/38847016854/artifacts/12023915945)，解压后安装 `RoamPrint-0.2.0-arm64.pkg`。下载需登录 GitHub，产物保留 30 天；过期后可在 Actions 重新运行构建。现有仓库直接维护展开的源码，无需再上传源码 ZIP。
+
+如需在另一个仓库使用可见文件构建包：
+
 交付文件 `RoamPrint-0.2.0-build-kit.zip` 及其中的源码 ZIP 均不含隐藏文件。
 
 1. 解压构建包，将其中的 **RoamPrint-source.zip 原样上传**到 GitHub 仓库根目录，不要解压这个内层 ZIP。
@@ -31,7 +35,7 @@
 
 已完成源码和云端构建配置，**41 项核心测试通过，0 失败**，覆盖真实 URLSession 请求、系统 curl 的 FTP/WebDAV 上传、原文件保留、刷卡任务参数和登录记忆逻辑。已验证原生请求可访问没有 CORS 响应头的测试接口。
 
-当前环境是 Linux，尚未运行 GitHub 的 macOS 构建，尚无实际生成的 ARM64 安装包；Mac 编译、真实钥匙串、打印菜单和内网刷卡流程仍需验证。默认构建采用 ad-hoc 签名，未做 Apple 公证。
+2026-10-16，GitHub 的 macOS 15 ARM64 runner 已通过完整测试（含真实钥匙串测试）、发布编译、ARM64 架构检查、应用签名校验和 PKG 打包，安装包已上传。用户 macOS 27.0 上的安装、打印菜单和内网刷卡流程仍需实测。默认应用采用 ad-hoc 签名，未做 Apple 公证。
 
 - [安装、使用与验收](docs/install.md)
 - [V5 协议与 REA 证据](docs/protocol.md)

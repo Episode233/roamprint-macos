@@ -2,11 +2,13 @@
 
 项目替换 Intel 客户端的本地提交部分：macOS 打印菜单 → 本地待提交列表 → 企业平台 → 打印机刷卡取件。它不会向实体打印机直接发送打印数据。目标平台为 `http://10.1.8.5/xzentprint`，使用 V5 协议。
 
-当前开发环境为 Linux。这里提供 ARM64 源码及 macOS 构建脚本，尚未在 macOS 27.0 上编译、安装或完成真实平台的刷卡取件验证。不要把生成脚本视为已经通过现场验证的安装包。
+GitHub 的 macOS 15 ARM64 runner 已通过测试、发布编译、架构检查、应用签名校验及 PKG 打包，见 [成功构建记录](https://github.com/Episode233/roamprint-macos/actions/runs/38847016854)。可下载 [RoamPrint-arm64](https://github.com/Episode233/roamprint-macos/actions/runs/38847016854/artifacts/12023915945)，解压后安装 `RoamPrint-0.2.0-arm64.pkg`。用户 macOS 27.0 上的安装、打印菜单及真实平台刷卡取件仍需现场验证。
 
 ## 用 GitHub 构建（本地无需开发环境）
 
-1. 在 [GitHub 新建仓库](https://github.com/new)，可继续使用 `roamprint-macos`，勾选创建 README。旧仓库已删除，需要重新创建。
+现有 [roamprint-macos 仓库](https://github.com/Episode233/roamprint-macos) 已包含展开的源码和工作流，可直接进入 Actions 运行构建，无需重新上传。以下步骤用于在另一个仓库使用可见文件构建包：
+
+1. 在 [GitHub 新建仓库](https://github.com/new)，勾选创建 README。
 2. 解压 `RoamPrint-0.2.0-build-kit.zip`。在仓库选择 **Add file → Upload files**，将其中的 **RoamPrint-source.zip 原样上传到仓库根目录**并提交；不要解压内层源码 ZIP，也不要上传外层构建包。
 3. 打开可见文件 **macos-build.yml** 并复制全部内容。在 GitHub 选择 **Add file → Create new file**，文件名填 `.github/workflows/macos.yml`，粘贴并提交。这是 GitHub 固定要求的工作流路径；通过网页创建，无需上传隐藏文件。
 4. 提交工作流后，Actions 中的 **Build macOS ARM64** 会自动运行；也可点击 **Run workflow**。
@@ -18,7 +20,7 @@
 
 默认产物为本地 ad-hoc 签名，未做 Apple 公证。下载后如果 macOS 阻止打开，在“系统设置 → 隐私与安全性”中对已确认来源的安装包或应用选择“仍要打开”；不需要全局关闭系统安全设置。
 
-此工作流已准备，但还没有仓库或真实 GitHub 构建记录；首次运行结果才是 Mac 编译是否成功的依据。
+如果构建失败，Actions 注释会显示 Swift 编译和测试诊断，以及构建日志的最后 30 行；完整日志可在 **RoamPrint-build-log** 下载。
 
 ## 在 Mac 本地构建（可选）
 
