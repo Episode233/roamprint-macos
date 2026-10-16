@@ -21,7 +21,7 @@
 
 ## GitHub 云端构建，无需本地开发环境
 
-现有仓库已成功完成 [macOS ARM64 构建](https://github.com/Episode233/roamprint-macos/actions/runs/38848133220)。可在最新成功的运行中下载 [ZGCAxZGCIprinter-arm64 安装包](https://github.com/Episode233/roamprint-macos/actions/workflows/macos.yml)，解压后安装 `ZGCAxZGCIprinter-1.0.0-arm64.pkg`。下载需登录 GitHub，产物保留 30 天；过期后可在 Actions 重新运行构建。现有仓库直接维护展开的源码，无需再上传源码 ZIP。
+现有仓库已成功完成 [macOS ARM64 构建](https://github.com/Episode233/roamprint-macos/actions/runs/38863514286)。可在最新成功的运行中下载 [ZGCAxZGCIprinter-arm64 安装包](https://github.com/Episode233/roamprint-macos/actions/runs/38863514286/artifacts/12030575480)，解压后安装 `ZGCAxZGCIprinter-1.0.0-arm64.pkg`。下载需登录 GitHub，产物保留 30 天；过期后可在 Actions 重新运行构建。现有仓库直接维护展开的源码，无需再上传源码 ZIP。
 
 如需在另一个仓库使用可见文件构建包：
 

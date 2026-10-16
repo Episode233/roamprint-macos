@@ -2,6 +2,12 @@
 
 验证日期：2026-10-16。目标是 Apple Silicon 上保持“系统打印菜单 → 本地待提交 → 企业平台 → 刷卡释放”，不使用 Rosetta。
 
+## 1.0.0 发布构建
+
+2026-10-16，用户指定的 **1.0.0** 已通过 [GitHub macOS ARM64 构建 38863514286](https://github.com/Episode233/roamprint-macos/actions/runs/38863514286)，源码提交为 `dc62fbad25e34ba6de35a796252d9997eaef1bf7`。完整测试、发布编译、架构检查、应用签名校验、PKG 打包及上传均成功。[安装包](https://github.com/Episode233/roamprint-macos/actions/runs/38863514286/artifacts/12030575480) 中的文件为 `ZGCAxZGCIprinter-1.0.0-arm64.pkg`。本次只同步发布版本和版本管理约定；内部构建号保持原值，后续未经用户明确指定不自行升版。
+
+下方保留此前各版本的实际验证记录。
+
 ## 已验证
 
 Linux x86_64、Swift 6.2.4、包含系统 curl 的 Docker 环境中，`swift test` 共 **41 项测试通过，0 失败**。

@@ -17,7 +17,7 @@
 
 ## 在 GitHub 生成安装包
 
-现有 [roamprint-macos 仓库](https://github.com/Episode233/roamprint-macos) 已成功构建，可在最新成功的运行中下载 [ZGCAxZGCIprinter-arm64](https://github.com/Episode233/roamprint-macos/actions/workflows/macos.yml)，或进入 Actions 重新运行。下载需登录 GitHub，产物保留 30 天。现有仓库直接维护展开的源码，无需上传本构建包。
+现有 [roamprint-macos 仓库](https://github.com/Episode233/roamprint-macos) 已成功构建，可在最新成功的运行中下载 [ZGCAxZGCIprinter-arm64](https://github.com/Episode233/roamprint-macos/actions/runs/38863514286/artifacts/12030575480)，或进入 Actions 重新运行。下载需登录 GitHub，产物保留 30 天。现有仓库直接维护展开的源码，无需上传本构建包。
 
 以下步骤用于将构建包上传到另一个仓库：
 
@@ -50,6 +50,6 @@
 
 ## 当前验证状态
 
-Linux 41 项核心测试已通过。2026-10-16 的 [GitHub macOS 15 ARM64 构建](https://github.com/Episode233/roamprint-macos/actions/runs/38848133220) 也已通过完整测试（含真实钥匙串测试）、发布编译、架构检查、应用签名校验、PKG 打包及产物上传。用户 macOS 27.0 上的安装、打印菜单和内网刷卡取件仍需实测。此构建包提供源码和配置，实际 `.pkg` 可从上述成功构建下载。
+Linux 41 项核心测试已通过。2026-10-16 的 [GitHub macOS 15 ARM64 构建](https://github.com/Episode233/roamprint-macos/actions/runs/38863514286) 也已通过完整测试（含真实钥匙串测试）、发布编译、架构检查、应用签名校验、PKG 打包及产物上传。用户 macOS 27.0 上的安装、打印菜单和内网刷卡取件仍需实测。此构建包提供源码和配置，实际 `.pkg` 可从上述成功构建下载。
 
 默认应用使用 ad-hoc 签名，安装包未做 Apple 公证。若 macOS 拦截已确认来源的下载文件，可在“系统设置 → 隐私与安全性”中选择“仍要打开”。无需全局关闭系统安全设置。
