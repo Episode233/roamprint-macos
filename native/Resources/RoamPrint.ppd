@@ -5,10 +5,10 @@
 *LanguageEncoding: ISOLatin1
 *PCFileName: "ROAMPRNT.PPD"
 *Manufacturer: "RoamPrint"
-*Product: "(RoamPrint Card Release Queue)"
-*ModelName: "RoamPrint Card Release Queue"
-*ShortNickName: "RoamPrint"
-*NickName: "RoamPrint Card Release Queue"
+*Product: "(ZGCAxZGCIprinter)"
+*ModelName: "ZGCAxZGCIprinter"
+*ShortNickName: "ZGCAxZGCIprinter"
+*NickName: "ZGCAxZGCIprinter"
 *PSVersion: "(3010.000) 0"
 *LanguageLevel: "3"
 *ColorDevice: True

@@ -15,9 +15,9 @@ if [[ ! -x "$service_path" || ! -f "$ppd_path" ]]; then
 fi
 /usr/bin/lipo -verify_arch arm64 "$service_path"
 printer_exists=false
-if printer_details=$(/usr/bin/lpstat -v RoamPrint 2>/dev/null); then
+if printer_details=$(/usr/bin/lpstat -v ZGCAxZGCIprinter 2>/dev/null); then
     if [[ "$printer_details" != *": ipp://127.0.0.1:19963/ipp/print" ]]; then
-        echo "同名 RoamPrint 队列已存在且使用不同地址，请先处理该队列。" >&2
+        echo "同名 ZGCAxZGCIprinter 队列已存在且使用不同地址，请先处理该队列。" >&2
         exit 1
     fi
     printer_exists=true
@@ -42,7 +42,7 @@ rollback() {
     trap - EXIT
     if [[ "$rollback_status" -ne 0 ]]; then
         if [[ "$printer_created" == true ]]; then
-            /usr/bin/sudo -n /usr/sbin/lpadmin -x RoamPrint >/dev/null 2>&1 || \
+            /usr/bin/sudo -n /usr/sbin/lpadmin -x ZGCAxZGCIprinter >/dev/null 2>&1 || \
                 echo "新打印队列回滚失败，可运行 remove-local-printer.sh 移除。" >&2
         fi
         if [[ "$agent_changed" == true ]]; then
@@ -100,9 +100,9 @@ if [[ "$printer_exists" != true ]]; then
     echo "添加 macOS 打印队列需要管理员权限。"
     # Mark before invoking lpadmin, so a partially created queue is also rolled back.
     printer_created=true
-    /usr/bin/sudo /usr/sbin/lpadmin -p RoamPrint -E \
-        -D "企业刷卡打印" -L "提交到平台后刷卡取件" \
+    /usr/bin/sudo /usr/sbin/lpadmin -p ZGCAxZGCIprinter -E \
+        -D "ZGCAxZGCIprinter" -L "提交到平台后刷卡取件" \
         -v ipp://127.0.0.1:19963/ipp/print -P "$ppd_path" -o printer-is-shared=false
-    /usr/bin/lpoptions -p RoamPrint -o media=A4 -o ColorModel=Gray -o Duplex=None
+    /usr/bin/lpoptions -p ZGCAxZGCIprinter -o media=A4 -o ColorModel=Gray -o Duplex=None
 fi
-echo "已启用“企业刷卡打印”。从系统打印菜单发送后，在 RoamPrint 中确认并提交。"
+echo "已启用“ZGCAxZGCIprinter”。从系统打印菜单发送后，在 RoamPrint 中确认并提交。"

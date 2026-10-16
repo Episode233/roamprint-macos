@@ -229,9 +229,9 @@ public actor IPPHandler {
         var result: [IPPAttribute] = [
             .text("printer-uri-supported", Self.printerURI, tag: 0x45),
             .text("uri-authentication-supported", "none"), .text("uri-security-supported", "none"),
-            .text("printer-name", "RoamPrint", tag: 0x42),
-            .text("printer-info", "RoamPrint - submit then release by card", tag: 0x41),
-            .text("printer-make-and-model", "RoamPrint PDF Capture", tag: 0x41),
+            .text("printer-name", "ZGCAxZGCIprinter", tag: 0x42),
+            .text("printer-info", "ZGCAxZGCIprinter", tag: 0x41),
+            .text("printer-make-and-model", "ZGCAxZGCIprinter", tag: 0x41),
             .integer("printer-state", 3, tag: 0x23), .text("printer-state-reasons", "none"),
             .boolean("printer-is-accepting-jobs", true), .integer("queued-job-count", jobs.values.filter { $0.state == 3 || $0.state == 5 }.count),
             .integer("printer-up-time", Int(Date().timeIntervalSince(start))),

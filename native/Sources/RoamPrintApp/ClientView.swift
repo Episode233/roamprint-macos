@@ -35,7 +35,7 @@ struct ClientView: View {
                         VStack(spacing: 12) {
                             Image(systemName: "doc.badge.plus").font(.system(size: 38)).foregroundStyle(.secondary)
                             Text("尚无待提交文档").font(.title3)
-                            Text("在 Word、Excel 等应用中打开文档，\n从系统打印菜单选择“企业刷卡打印”。")
+                            Text("在 Word、Excel 等应用中打开文档，\n从系统打印菜单选择“ZGCAxZGCIprinter”。")
                                 .multilineTextAlignment(.center).foregroundStyle(.secondary)
                             Button("导入文件") { model.importFiles() }.disabled(model.busy)
                             Text("直接导入不限格式，按原文件提交；解析能力取决于打印平台。")
