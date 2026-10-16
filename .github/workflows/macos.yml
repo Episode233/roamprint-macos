@@ -1,0 +1,101 @@
+name: Build macOS ARM64
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/macos.yml'
+      - 'native/**'
+      - 'scripts/**'
+      - 'RoamPrint-source.zip'
+  pull_request:
+    paths:
+      - '.github/workflows/macos.yml'
+      - 'native/**'
+      - 'scripts/**'
+      - 'RoamPrint-source.zip'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: macos-arm64-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    # Standard Apple Silicon runner, with Xcode and Swift preinstalled.
+    runs-on: macos-15
+    timeout-minutes: 30
+    env:
+      ROAMPRINT_VERSION: '0.2.0'
+      ROAMPRINT_OUTPUT_DIR: ${{ github.workspace }}/dist
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Check Apple Silicon build environment
+        run: |
+          test "$(uname -m)" = arm64
+          xcodebuild -version
+          xcrun swift --version
+
+      - name: Locate source or unpack browser-uploaded ZIP
+        run: |
+          if [[ -f RoamPrint-source.zip ]]; then
+            source_dir="$RUNNER_TEMP/roamprint-source"
+            mkdir -p "$source_dir"
+            /usr/bin/ditto -x -k RoamPrint-source.zip "$source_dir"
+          else
+            source_dir="$GITHUB_WORKSPACE"
+          fi
+          test -f "$source_dir/native/Package.swift"
+          test -f "$source_dir/scripts/build-macos.sh"
+          printf 'ROAMPRINT_PROJECT_DIR=%s\n' "$source_dir" >> "$GITHUB_ENV"
+
+      - name: Test and build app and PKG
+        run: |
+          # A disposable, unlocked keychain lets the real Keychain test run without a GUI prompt.
+          test_keychain="$RUNNER_TEMP/roamprint-tests.keychain-db"
+          test_password="$(openssl rand -hex 24)"
+          printf '::add-mask::%s\n' "$test_password"
+          trap '/usr/bin/security delete-keychain "$test_keychain" >/dev/null 2>&1 || true' EXIT
+          /usr/bin/security create-keychain -p "$test_password" "$test_keychain"
+          /usr/bin/security set-keychain-settings -lut 3600 "$test_keychain"
+          /usr/bin/security unlock-keychain -p "$test_password" "$test_keychain"
+          /usr/bin/security list-keychains -d user -s "$test_keychain"
+          /usr/bin/security default-keychain -d user -s "$test_keychain"
+          mkdir -p dist
+          bash "$ROAMPRINT_PROJECT_DIR/scripts/build-macos.sh" 2>&1 | tee dist/build.log
+
+      - name: Package downloads
+        run: |
+          /usr/bin/ditto -c -k --sequesterRsrc --keepParent \
+            dist/RoamPrint.app "dist/RoamPrint-$ROAMPRINT_VERSION-arm64.app.zip"
+          cd dist
+          /usr/bin/shasum -a 256 "RoamPrint-$ROAMPRINT_VERSION-arm64.pkg" \
+            "RoamPrint-$ROAMPRINT_VERSION-arm64.app.zip" > SHA256SUMS
+
+      - name: Upload ARM64 installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: RoamPrint-arm64
+          path: |
+            dist/*.pkg
+            dist/*.app.zip
+            dist/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: RoamPrint-build-log
+          path: dist/build.log
+          if-no-files-found: ignore
+          retention-days: 7
