@@ -34,7 +34,7 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
@@ -81,7 +81,7 @@ jobs:
             "RoamPrint-$ROAMPRINT_VERSION-arm64.app.zip" > SHA256SUMS
 
       - name: Upload ARM64 installer
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: RoamPrint-arm64
           path: |
@@ -93,7 +93,7 @@ jobs:
 
       - name: Upload build log
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: RoamPrint-build-log
           path: dist/build.log
