@@ -13,7 +13,7 @@ if [[ ! -x "$service_path" || ! -f "$ppd_path" ]]; then
     echo "找不到完整的 RoamPrint.app：$app_path" >&2
     exit 1
 fi
-/usr/bin/lipo -verify_arch arm64 "$service_path"
+/usr/bin/lipo "$service_path" -verify_arch arm64
 printer_exists=false
 if printer_details=$(/usr/bin/lpstat -v ZGCAxZGCIprinter 2>/dev/null); then
     if [[ "$printer_details" != *": ipp://127.0.0.1:19963/ipp/print" ]]; then

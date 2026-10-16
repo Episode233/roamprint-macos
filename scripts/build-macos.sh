@@ -18,7 +18,7 @@ xcrun swift test --arch arm64
 xcrun swift build --configuration release --arch arm64
 binary_dir=$(xcrun swift build --configuration release --arch arm64 --show-bin-path)
 for binary in RoamPrint roamprint-service; do
-    /usr/bin/lipo -verify_arch arm64 "$binary_dir/$binary"
+    /usr/bin/lipo "$binary_dir/$binary" -verify_arch arm64
 done
 if [[ -e "$app_path" ]]; then
     echo "输出已存在：$app_path。请移走该目录后重新构建。" >&2
