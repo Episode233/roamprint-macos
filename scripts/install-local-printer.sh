@@ -5,12 +5,12 @@ if [[ "$(uname -s)" != Darwin || "$EUID" -eq 0 ]]; then
     exit 1
 fi
 script_dir=$(cd "$(dirname "$0")" && pwd)
-app_path=${1:-/Applications/RoamPrint.app}
+app_path=${1:-/Applications/ZGCAxZGCIprinter.app}
 if [[ "$script_dir" == */Contents/Resources ]]; then app_path=${1:-${script_dir%/Contents/Resources}}; fi
 service_path="$app_path/Contents/Resources/bin/roamprint-service"
 ppd_path="$app_path/Contents/Resources/RoamPrint.ppd"
 if [[ ! -x "$service_path" || ! -f "$ppd_path" ]]; then
-    echo "找不到完整的 RoamPrint.app：$app_path" >&2
+    echo "找不到完整的 ZGCAxZGCIprinter.app：$app_path" >&2
     exit 1
 fi
 /usr/bin/lipo "$service_path" -verify_arch arm64
@@ -105,4 +105,4 @@ if [[ "$printer_exists" != true ]]; then
         -v ipp://127.0.0.1:19963/ipp/print -P "$ppd_path" -o printer-is-shared=false
     /usr/bin/lpoptions -p ZGCAxZGCIprinter -o media=A4 -o ColorModel=Gray -o Duplex=None
 fi
-echo "已启用“ZGCAxZGCIprinter”。从系统打印菜单发送后，在 RoamPrint 中确认并提交。"
+echo "已启用“ZGCAxZGCIprinter”。从系统打印菜单发送后，在 ZGCAxZGCIprinter 中确认并提交。"

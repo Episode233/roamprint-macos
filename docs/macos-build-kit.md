@@ -1,10 +1,10 @@
-# RoamPrint Apple Silicon 构建包
+# ZGCAxZGCIprinter Apple Silicon 构建包
 
 用于 M 系列 Mac，原生 ARM64，无需 Rosetta。本地不用安装 Xcode、Swift、Homebrew 或 Node。
 
 ## 包里有哪些文件
 
-解压外层 `RoamPrint-0.2.0-build-kit.zip`，打开 `RoamPrint-macos-arm64` 文件夹，里面只有四个普通可见文件：
+解压外层 `ZGCAxZGCIprinter-0.2.1-build-kit.zip`，打开 `ZGCAxZGCIprinter-macos-arm64` 文件夹，里面只有四个普通可见文件：
 
 | 文件 | 用途 |
 | --- | --- |
@@ -17,7 +17,7 @@
 
 ## 在 GitHub 生成安装包
 
-现有 [roamprint-macos 仓库](https://github.com/Episode233/roamprint-macos) 已成功构建，可直接下载 [RoamPrint-arm64](https://github.com/Episode233/roamprint-macos/actions/runs/38847016854/artifacts/12023915945)，或进入 Actions 重新运行。下载需登录 GitHub，产物保留 30 天。现有仓库直接维护展开的源码，无需上传本构建包。
+现有 [roamprint-macos 仓库](https://github.com/Episode233/roamprint-macos) 已成功构建，可在最新成功的运行中下载 [ZGCAxZGCIprinter-arm64](https://github.com/Episode233/roamprint-macos/actions/workflows/macos.yml)，或进入 Actions 重新运行。下载需登录 GitHub，产物保留 30 天。现有仓库直接维护展开的源码，无需上传本构建包。
 
 以下步骤用于将构建包上传到另一个仓库：
 
@@ -32,17 +32,17 @@
    将工作流内容粘贴到正文，点击 **Commit changes**。GitHub 只在这个固定目录识别工作流；这里是在网页创建文件，不需要上传任何本地隐藏文件。
 
 4. 进入 **Actions → Build macOS ARM64**。提交工作流后会自动开始；未自动开始时点击 **Run workflow → Run workflow**。
-5. 等运行变绿，打开该次运行，在底部 **Artifacts** 下载 **RoamPrint-arm64**。解压得到 **RoamPrint-0.2.0-arm64.pkg**，双击安装。
+5. 等运行变绿，打开该次运行，在底部 **Artifacts** 下载 **ZGCAxZGCIprinter-arm64**。解压得到 **ZGCAxZGCIprinter-0.2.1-arm64.pkg**，双击安装。
 
-若运行变红，查看 Actions 注释中的 Swift 诊断和失败日志末尾，或下载 **RoamPrint-build-log** 查看完整日志。构建时不需要填写或上传打印账号密码。
+若运行变红，查看 Actions 注释中的 Swift 诊断和失败日志末尾，或下载 **ZGCAxZGCIprinter-build-log** 查看完整日志。构建时不需要填写或上传打印账号密码。
 
 以后更新源码，只需用同名 `RoamPrint-source.zip` 覆盖仓库根目录里的旧文件并提交，就会再次构建。如新版也修改了工作流，再用新版 `macos-build.yml` 内容更新网页上的工作流文件。
 
 ## 安装后怎么用
 
-1. 连接企业内网，打开 RoamPrint，点击“检测连接”。默认地址已设置为 `http://10.1.8.5/xzentprint/services`。
+1. 连接企业内网，打开 ZGCAxZGCIprinter，点击“检测连接”。默认地址已设置为 `http://10.1.8.5/xzentprint/services`。
 2. 点击“添加到打印菜单”，在弹出的终端窗口按提示输入 Mac 管理员密码。这一步只需设置一次，随后可在打印菜单中选择“ZGCAxZGCIprinter”，名称按用户指定设置。
-3. 在 Word、Excel、PPT 等应用中使用系统打印菜单，或者在 RoamPrint 中点击“导入文件”。直接导入不限扩展名，保留原文件提交；具体格式是否能处理取决于平台。单个文件最大 128 MB。
+3. 在 Word、Excel、PPT 等应用中使用系统打印菜单，或者在 ZGCAxZGCIprinter 中点击“导入文件”。直接导入不限扩展名，保留原文件提交；具体格式是否能处理取决于平台。单个文件最大 128 MB。
 4. 检查打印参数，输入打印账号密码，点击“提交并等待刷卡取件”。默认勾选“记住登录信息”，成功提交后保存到 macOS 钥匙串，下次自动填写。
 5. 显示“已提交，请刷卡取件”后，去打印机刷卡取件。
 

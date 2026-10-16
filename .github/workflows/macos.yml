@@ -28,7 +28,7 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 30
     env:
-      ROAMPRINT_VERSION: '0.2.0'
+      ROAMPRINT_VERSION: '0.2.1'
       ROAMPRINT_OUTPUT_DIR: ${{ github.workspace }}/dist
     defaults:
       run:
@@ -90,15 +90,15 @@ jobs:
       - name: Package downloads
         run: |
           /usr/bin/ditto -c -k --sequesterRsrc --keepParent \
-            dist/RoamPrint.app "dist/RoamPrint-$ROAMPRINT_VERSION-arm64.app.zip"
+            dist/ZGCAxZGCIprinter.app "dist/ZGCAxZGCIprinter-$ROAMPRINT_VERSION-arm64.app.zip"
           cd dist
-          /usr/bin/shasum -a 256 "RoamPrint-$ROAMPRINT_VERSION-arm64.pkg" \
-            "RoamPrint-$ROAMPRINT_VERSION-arm64.app.zip" > SHA256SUMS
+          /usr/bin/shasum -a 256 "ZGCAxZGCIprinter-$ROAMPRINT_VERSION-arm64.pkg" \
+            "ZGCAxZGCIprinter-$ROAMPRINT_VERSION-arm64.app.zip" > SHA256SUMS
 
       - name: Upload ARM64 installer
         uses: actions/upload-artifact@v7
         with:
-          name: RoamPrint-arm64
+          name: ZGCAxZGCIprinter-arm64
           path: |
             dist/*.pkg
             dist/*.app.zip
@@ -110,7 +110,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: RoamPrint-build-log
+          name: ZGCAxZGCIprinter-build-log
           path: dist/build.log
           if-no-files-found: ignore
           retention-days: 7

@@ -33,7 +33,7 @@ GitHub 的 **macOS 15 ARM64** runner 已完成实际 Apple SDK 编译和链接�
 
 REA 静态分析核对了原 Mac 主程序、密码库和打印后端。后端方向为纵向 1/横向 2，逐份打印为 0/1，文件大小按实际字节数提交。证据 ID 见 [协议记录](protocol.md)。原 Intel 软件未在此开发环境执行。
 
-打印机名称按用户指定统一为 `ZGCAxZGCIprinter`，覆盖队列名称、显示名称、IPP 属性和界面提示。本次命名修改已检查安装/移除脚本、界面语法及分发包内容。
+打印机名称按用户指定统一为 `ZGCAxZGCIprinter`，覆盖队列名称、显示名称、IPP 属性和界面提示。0.2.1 进一步统一窗口标题、应用名称、主程序名称及安装包名称；应用路径为 `/Applications/ZGCAxZGCIprinter.app`。
 
 ## 待验证
 

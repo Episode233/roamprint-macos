@@ -222,7 +222,7 @@ public actor IPPHandler {
             .text("job-name", job.title, tag: 0x42, group: 2),
             .integer("job-state", job.state, tag: 0x23, group: 2),
             .text("job-state-reasons", job.state == 9 ? "job-completed-successfully" : job.state == 7 ? "job-canceled-by-user" : job.state == 8 ? "aborted-by-system" : "none", group: 2),
-            .text("job-state-message", job.state == 9 ? "Captured locally. Submit in RoamPrint, then release by card." : "Receiving local PDF", tag: 0x41, group: 2)
+            .text("job-state-message", job.state == 9 ? "Captured locally. Submit in ZGCAxZGCIprinter, then release by card." : "Receiving local PDF", tag: 0x41, group: 2)
         ]
     }
     private func printerAttributes() -> [IPPAttribute] {

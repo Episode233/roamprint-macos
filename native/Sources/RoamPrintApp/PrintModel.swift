@@ -223,7 +223,7 @@ final class PrintModel: ObservableObject {
     func addToPrintMenu() {
         guard let script = Bundle.main.resourceURL?.appendingPathComponent("add-to-print-menu.command"),
               FileManager.default.isExecutableFile(atPath: script.path) else {
-            alert = "请使用构建脚本生成的 RoamPrint.app 添加打印队列。"
+            alert = "请使用构建脚本生成的 ZGCAxZGCIprinter.app 添加打印队列。"
             return
         }
         if !NSWorkspace.shared.open(script) { alert = "无法打开打印队列安装程序。" }

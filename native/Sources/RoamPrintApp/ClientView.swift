@@ -7,7 +7,7 @@ struct ClientView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("企业漫游打印").font(.title2.bold())
+                Text("ZGCAxZGCIprinter").font(.title2.bold())
                 Spacer()
                 Button { model.importFiles() } label: { Label("导入文件", systemImage: "plus") }
                     .disabled(model.busy)
