@@ -2,7 +2,7 @@
 
 项目替换 Intel 客户端的本地提交部分：macOS 打印菜单 → 本地待提交列表 → 企业平台 → 打印机刷卡取件。它不会向实体打印机直接发送打印数据。目标平台为 `http://10.1.8.5/xzentprint`，使用 V5 协议。
 
-GitHub 的 macOS 15 ARM64 runner 已通过测试、发布编译、架构检查、应用签名校验及 PKG 打包，见 [成功构建记录](https://github.com/Episode233/roamprint-macos/actions/runs/38847016854)。可在最新成功的运行中下载 [ZGCAxZGCIprinter-arm64](https://github.com/Episode233/roamprint-macos/actions/workflows/macos.yml)，解压后安装 `ZGCAxZGCIprinter-0.2.1-arm64.pkg`。用户 macOS 27.0 上的安装、打印菜单及真实平台刷卡取件仍需现场验证。
+GitHub 的 macOS 15 ARM64 runner 已通过测试、发布编译、架构检查、应用签名校验及 PKG 打包，见 [成功构建记录](https://github.com/Episode233/roamprint-macos/actions/runs/38848133220)。可在最新成功的运行中下载 [ZGCAxZGCIprinter-arm64](https://github.com/Episode233/roamprint-macos/actions/runs/38848133220/artifacts/12023682895)，解压后安装 `ZGCAxZGCIprinter-0.2.1-arm64.pkg`。用户 macOS 27.0 上的安装、打印菜单及真实平台刷卡取件仍需现场验证。
 
 ## 用 GitHub 构建（本地无需开发环境）
 
