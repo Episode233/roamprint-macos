@@ -2,6 +2,16 @@
 
 验证日期：2026-10-16。目标是 Apple Silicon 上保持“系统打印菜单 → 本地待提交 → 企业平台 → 刷卡释放”，不使用 Rosetta。
 
+## 1.0.0 打印菜单与导入交互修复
+
+2026-10-16，[GitHub 构建 38873731293](https://github.com/Episode233/roamprint-macos/actions/runs/38873731293) 已通过，源码提交为 `9d9cc763bfaf051dc1bb2e868f8dc6dc8ea562b6`。版本和内部构建号保持不变；[本次安装包](https://github.com/Episode233/roamprint-macos/actions/runs/38873731293/artifacts/12034147884) 仍名为 `ZGCAxZGCIprinter-1.0.0-arm64.pkg`。
+
+- 安装脚本移除了会触发开发工具安装的 `lipo` 调用；ARM64 架构检查继续在云端构建时执行。安装脚本通过 `bash -n`。
+- 列表刷新保留空选择；删除选中项后不自动选中其余记录。列表行按钮、右键菜单和 Delete 键使用同一删除入口，文案统一为“删除上传记录”。
+- 窗口接收本地文件 URL 的拖放，与文件选择器共用导入路径；多个文件保留原文件名及字节，文件夹单独报错，不阻止其余有效文件导入。
+- Linux 41 项核心测试通过；macOS CI 的完整测试通过，包括新增的 5 项应用模型回归测试：取消选择后的多次刷新和新作业到达、删除非选中项、删除选中项、混合格式多文件导入、繁忙及待确认状态下的删除保护。测试使用临时队列和独立偏好设置，不读取用户登录信息。
+- 云端 ARM64 编译、签名校验、PKG 打包及上传均通过。Finder 拖拽、列表按钮和键盘的实际界面操作，以及无开发工具的用户 Mac 上安装打印队列，仍需在目标设备确认；这些系统交互未由模型测试代替验证。
+
 ## 1.0.0 发布构建
 
 2026-10-16，用户指定的 **1.0.0** 已通过 [GitHub macOS ARM64 构建 38863514286](https://github.com/Episode233/roamprint-macos/actions/runs/38863514286)，源码提交为 `dc62fbad25e34ba6de35a796252d9997eaef1bf7`。完整测试、发布编译、架构检查、应用签名校验、PKG 打包及上传均成功。[安装包](https://github.com/Episode233/roamprint-macos/actions/runs/38863514286/artifacts/12030575480) 中的文件为 `ZGCAxZGCIprinter-1.0.0-arm64.pkg`。本次只同步发布版本和版本管理约定；内部构建号保持原值，后续未经用户明确指定不自行升版。

@@ -2,7 +2,7 @@
 
 项目替换 Intel 客户端的本地提交部分：macOS 打印菜单 → 本地待提交列表 → 企业平台 → 打印机刷卡取件。它不会向实体打印机直接发送打印数据。目标平台为 `http://10.1.8.5/xzentprint`，使用 V5 协议。
 
-GitHub 的 macOS 15 ARM64 runner 已通过测试、发布编译、架构检查、应用签名校验及 PKG 打包，见 [成功构建记录](https://github.com/Episode233/roamprint-macos/actions/runs/38863514286)。可在最新成功的运行中下载 [ZGCAxZGCIprinter-arm64](https://github.com/Episode233/roamprint-macos/actions/runs/38863514286/artifacts/12030575480)，解压后安装 `ZGCAxZGCIprinter-1.0.0-arm64.pkg`。用户 macOS 27.0 上的安装、打印菜单及真实平台刷卡取件仍需现场验证。
+GitHub 的 macOS 15 ARM64 runner 已通过测试、发布编译、架构检查、应用签名校验及 PKG 打包，见 [成功构建记录](https://github.com/Episode233/roamprint-macos/actions/runs/38873731293)。可在最新成功的运行中下载 [ZGCAxZGCIprinter-arm64](https://github.com/Episode233/roamprint-macos/actions/runs/38873731293/artifacts/12034147884)，解压后安装 `ZGCAxZGCIprinter-1.0.0-arm64.pkg`。用户 macOS 27.0 上的安装、打印菜单及真实平台刷卡取件仍需现场验证。
 
 ## 用 GitHub 构建（本地无需开发环境）
 
@@ -67,7 +67,7 @@ open /Applications/ZGCAxZGCIprinter.app
 
 ## macOS 27.0 现场验收
 
-- 检查应用和服务的 系统自带 `file` 命令的 输出为 ARM64；确认未出现 Rosetta 安装要求。
+- 用系统自带的 `file` 命令检查应用和服务的架构为 ARM64；确认未出现 Rosetta 安装要求。
 - 用 Preview 的一页 PDF 测试打印菜单，确认作业进入本地列表、平台尚未出现作业。
 - 手动提交后，核对平台账号、作业名称、份数、纸张、单双面和彩色设置；实体打印机在刷卡前保持未打印，刷卡后才输出。
 - 分别测试双面、多份、页面范围、A3，以及重新登录后的服务自启动。
