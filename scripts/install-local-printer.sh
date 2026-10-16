@@ -13,7 +13,8 @@ if [[ ! -x "$service_path" || ! -f "$ppd_path" ]]; then
     echo "找不到完整的 ZGCAxZGCIprinter.app：$app_path" >&2
     exit 1
 fi
-/usr/bin/lipo "$service_path" -verify_arch arm64
+# The build verifies the packaged binaries. lipo on a user's Mac may invoke
+# xcode-select and request developer tools, which installation does not need.
 printer_exists=false
 if printer_details=$(/usr/bin/lpstat -v ZGCAxZGCIprinter 2>/dev/null); then
     if [[ "$printer_details" != *": ipp://127.0.0.1:19963/ipp/print" ]]; then

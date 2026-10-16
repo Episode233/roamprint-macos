@@ -2,7 +2,6 @@
 import AppKit
 import PDFKit
 import SwiftUI
-import UniformTypeIdentifiers
 import RoamPrintCore
 
 @MainActor
@@ -19,8 +18,8 @@ final class PrintModel: ObservableObject {
     @Published private(set) var configuration: ServerConfiguration?
     private var queue: JobQueue?
     private var refreshTask: Task<Void, Never>?
-    private let defaults = UserDefaults.standard
-    private let rememberedLogin = RememberedLogin(store: KeychainLoginStore())
+    private let defaults: UserDefaults
+    private let rememberedLogin: RememberedLogin
 
     var configurationAddress: String {
         configuration?.baseURL.absoluteString ?? "http://10.1.8.5/xzentprint/services"
@@ -33,15 +32,24 @@ final class PrintModel: ObservableObject {
             !password.isEmpty && [.queued, .failed].contains(job.state)
     }
 
-    init() {
+    init(queue providedQueue: JobQueue? = nil, defaults: UserDefaults = .standard,
+         credentialStore: any LoginCredentialStoring = KeychainLoginStore(),
+         refreshAutomatically: Bool = true) {
+        self.defaults = defaults
+        self.rememberedLogin = RememberedLogin(store: credentialStore, defaults: defaults)
         do {
             let address = defaults.string(forKey: "platformAddress") ?? "http://10.1.8.5/xzentprint/services"
             configuration = try Self.configuration(from: address)
-            let support = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask,
-                                                      appropriateFor: nil, create: true)
-            queue = try JobQueue(root: support.appendingPathComponent("RoamPrint/jobs", isDirectory: true))
+            if let providedQueue {
+                queue = providedQueue
+            } else {
+                let support = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask,
+                                                          appropriateFor: nil, create: true)
+                queue = try JobQueue(root: support.appendingPathComponent("RoamPrint/jobs", isDirectory: true))
+            }
         } catch { alert = error.localizedDescription }
         restoreLogin()
+        guard refreshAutomatically else { return }
         refreshTask = Task { [weak self] in
             guard let self else { return }
             do { try await self.queue?.recoverInterrupted() } catch { self.alert = error.localizedDescription }
@@ -110,8 +118,12 @@ final class PrintModel: ObservableObject {
     func reload() async {
         guard let queue else { return }
         do {
-            jobs = try await queue.list()
-            if !jobs.contains(where: { $0.id == selectedID }) { selectedID = jobs.first?.id }
+            let refreshed = try await queue.list()
+            if jobs != refreshed { jobs = refreshed }
+            // An empty selection is intentional; polling must not select the first row.
+            if let selectedID, !refreshed.contains(where: { $0.id == selectedID }) {
+                self.selectedID = nil
+            }
         } catch { if alert == nil { alert = error.localizedDescription } }
     }
 
@@ -123,16 +135,28 @@ final class PrintModel: ObservableObject {
         panel.canChooseDirectories = false
         panel.message = "选择待打印文件，保留原文件提交。单个文件最大 128 MB。"
         panel.prompt = "加入待提交列表"
-        guard panel.runModal() == .OK, let queue else { return }
-        let urls = panel.urls
+        guard panel.runModal() == .OK else { return }
+        importFiles(at: panel.urls)
+    }
+
+    /// Both the file picker and Finder drops use the same original-file import path.
+    @discardableResult
+    func importFiles(at urls: [URL]) -> Task<Void, Never>? {
+        guard !busy, let queue, !urls.isEmpty, urls.allSatisfy(\.isFileURL) else { return nil }
         busy = true
-        Task {
+        return Task {
             defer { busy = false }
+            var lastImportedID: UUID?
+            var errors: [String] = []
             for url in urls {
                 let scoped = url.startAccessingSecurityScopedResource()
                 defer { if scoped { url.stopAccessingSecurityScopedResource() } }
                 do {
-                    let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
+                    let properties = try url.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey])
+                    guard properties.isRegularFile == true else {
+                        throw PrintError.invalidDocument("\(url.lastPathComponent)：请选择文件，暂不支持导入文件夹。")
+                    }
+                    let size = properties.fileSize ?? 0
                     guard size > 0, size <= 128 * 1024 * 1024 else {
                         throw PrintError.invalidDocument("\(url.lastPathComponent)：请选择非空文件，单个文件最大 128 MB。")
                     }
@@ -143,10 +167,12 @@ final class PrintModel: ObservableObject {
                     let info = DocumentInfo(title: url.lastPathComponent, pageCount: pages,
                                             byteCount: Int64(size), filename: url.lastPathComponent)
                     let job = try await queue.add(source: url, info: info, settings: PrintSettings())
-                    selectedID = job.id
-                } catch { alert = error.localizedDescription }
+                    lastImportedID = job.id
+                } catch { errors.append(error.localizedDescription) }
             }
             await reload()
+            if let lastImportedID { selectedID = lastImportedID }
+            if !errors.isEmpty { alert = errors.joined(separator: "\n") }
         }
     }
 
@@ -198,12 +224,20 @@ final class PrintModel: ObservableObject {
         }
     }
 
-    func remove(_ job: PrintJob) {
-        guard let queue else { return }
-        Task {
+    func canRemove(_ job: PrintJob) -> Bool {
+        !busy && !job.state.inFlight && job.state != .uncertain
+    }
+
+    @discardableResult
+    func remove(_ job: PrintJob) -> Task<Void, Never>? {
+        guard canRemove(job), let queue else { return nil }
+        busy = true
+        return Task {
+            defer { busy = false }
             do {
                 try await queue.remove(job.id)
                 draftSettings.removeValue(forKey: job.id)
+                if selectedID == job.id { selectedID = nil }
                 await reload()
             }
             catch { alert = error.localizedDescription }

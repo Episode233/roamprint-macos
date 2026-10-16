@@ -4,6 +4,7 @@ import RoamPrintCore
 
 struct ClientView: View {
     @ObservedObject var model: PrintModel
+    @State private var isDropTargeted = false
     var body: some View {
         VStack(spacing: 0) {
             HStack {
@@ -21,21 +22,40 @@ struct ClientView: View {
             HSplitView {
                 List(selection: $model.selectedID) {
                     ForEach(model.jobs) { job in
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text(job.document.title).lineLimit(1)
-                            Text("\(job.document.pageDescription) · \(job.state.label)")
-                                .font(.caption).foregroundStyle(.secondary)
+                        HStack {
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text(job.document.title).lineLimit(1)
+                                Text("\(job.document.pageDescription) · \(job.state.label)")
+                                    .font(.caption).foregroundStyle(.secondary)
+                            }.frame(maxWidth: .infinity, alignment: .leading)
+                            Button(role: .destructive) { model.remove(job) } label: {
+                                Image(systemName: "trash")
+                            }
+                            .buttonStyle(.borderless)
+                            .disabled(!model.canRemove(job))
+                            .help("删除上传记录")
+                            .accessibilityLabel("删除上传记录：\(job.document.title)")
                         }.padding(.vertical, 5).tag(job.id)
+                        .contextMenu {
+                            Button("删除上传记录", role: .destructive) { model.remove(job) }
+                                .disabled(!model.canRemove(job))
+                        }
                     }
-                }.frame(minWidth: 250, idealWidth: 310)
+                }
+                .onDeleteCommand {
+                    if let job = model.selectedJob { model.remove(job) }
+                }
+                .frame(minWidth: 250, idealWidth: 310)
                 Group {
                     if let job = model.selectedJob {
                         JobDetailView(model: model, job: job).id(job.id)
                     } else {
                         VStack(spacing: 12) {
                             Image(systemName: "doc.badge.plus").font(.system(size: 38)).foregroundStyle(.secondary)
-                            Text("尚无待提交文档").font(.title3)
-                            Text("在 Word、Excel 等应用中打开文档，\n从系统打印菜单选择“ZGCAxZGCIprinter”。")
+                            Text(model.jobs.isEmpty ? "尚无待提交文档" : "未选择文档").font(.title3)
+                            Text(model.jobs.isEmpty
+                                 ? "将文件拖到此窗口，或点击“导入文件”。\n也可从系统打印菜单选择“ZGCAxZGCIprinter”。"
+                                 : "选择左侧记录查看详情，或拖入新文件。")
                                 .multilineTextAlignment(.center).foregroundStyle(.secondary)
                             Button("导入文件") { model.importFiles() }.disabled(model.busy)
                             Text("直接导入不限格式，按原文件提交；解析能力取决于打印平台。")
@@ -68,6 +88,17 @@ struct ClientView: View {
                     }
                 }
             }.padding()
+        }
+        .dropDestination(for: URL.self) { urls, _ in
+            model.importFiles(at: urls) != nil
+        } isTargeted: { isDropTargeted = $0 }
+        .overlay {
+            if isDropTargeted && !model.busy {
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.accentColor, lineWidth: 3)
+                    .padding(4)
+                    .allowsHitTesting(false)
+            }
         }
         .alert("打印提示", isPresented: Binding(get: { model.alert != nil }, set: { if !$0 { model.alert = nil } })) {
             Button("知道了", role: .cancel) { model.alert = nil }
@@ -116,8 +147,9 @@ private struct JobDetailView: View {
                 HStack {
                     Button("打开文档") { model.preview(job) }
                     Spacer()
-                    Button("移除本地文档", role: .destructive) { model.remove(job) }
-                        .disabled(model.busy || job.state.inFlight || job.state == .uncertain)
+                    Button("删除上传记录", role: .destructive) { model.remove(job) }
+                        .disabled(!model.canRemove(job))
+                        .help("删除本地记录和缓存文件，保留原文件及平台上的作业。")
                 }
             }.padding(24)
         }

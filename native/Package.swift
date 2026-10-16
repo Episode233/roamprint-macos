@@ -14,7 +14,8 @@ let package = Package(
         .target(name: "RoamPrintCore", dependencies: ["LegacyCrypto"]),
         .executableTarget(name: "RoamPrintApp", dependencies: ["RoamPrintCore"]),
         .executableTarget(name: "RoamPrintService", dependencies: ["RoamPrintCore"]),
-        .testTarget(name: "RoamPrintCoreTests", dependencies: ["RoamPrintCore"])
+        .testTarget(name: "RoamPrintCoreTests", dependencies: ["RoamPrintCore"]),
+        .testTarget(name: "RoamPrintAppTests", dependencies: ["RoamPrintApp", "RoamPrintCore"])
     ],
     swiftLanguageModes: [.v5]
 )
