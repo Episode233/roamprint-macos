@@ -62,6 +62,9 @@ if [[ -e "$pkg_path" ]]; then
     exit 1
 fi
 # Always install at the new application path, even if an older RoamPrint.app exists.
+package_root="$output_dir/pkg-root"
+mkdir "$package_root"
+/usr/bin/ditto "$app_path" "$package_root/ZGCAxZGCIprinter.app"
 component_plist="$output_dir/component.plist"
 cat > "$component_plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -71,7 +74,7 @@ cat > "$component_plist" <<'PLIST'
 <key>BundleIsRelocatable</key><false/>
 </dict></array></plist>
 PLIST
-pkg_args=(--component "$app_path" --component-plist "$component_plist" --install-location /Applications
+pkg_args=(--root "$package_root" --component-plist "$component_plist" --install-location /Applications
           --identifier org.local.roamprint --version "$version")
 if [[ -n "$installer_identity" ]]; then pkg_args+=(--sign "$installer_identity"); fi
 /usr/bin/pkgbuild "${pkg_args[@]}" "$pkg_path"
