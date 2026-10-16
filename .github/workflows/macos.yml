@@ -57,6 +57,9 @@ jobs:
           test -f "$source_dir/scripts/build-macos.sh"
           printf 'ROAMPRINT_PROJECT_DIR=%s\n' "$source_dir" >> "$GITHUB_ENV"
 
+      - name: Show Swift compiler and test diagnostics
+        run: echo "::add-matcher::$ROAMPRINT_PROJECT_DIR/scripts/swift-problem-matcher.json"
+
       - name: Test and build app and PKG
         run: |
           # A disposable, unlocked keychain lets the real Keychain test run without a GUI prompt.

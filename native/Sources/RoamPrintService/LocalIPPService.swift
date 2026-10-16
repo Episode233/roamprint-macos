@@ -31,7 +31,7 @@ final class LocalIPPService {
                 else if abs(short - 595) < 4 && abs(long - 842) < 4 { a4 += 1 }
                 else { other += 1 }
             }
-            let incoming = jobs.root.appendingPathComponent(".incoming", isDirectory: true)
+            let incoming = (await jobs.root).appendingPathComponent(".incoming", isDirectory: true)
             try FileManager.default.createDirectory(at: incoming, withIntermediateDirectories: true,
                                                     attributes: [.posixPermissions: 0o700])
             let path = incoming.appendingPathComponent(UUID().uuidString + ".pdf")
