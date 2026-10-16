@@ -215,13 +215,24 @@ final class V5PlatformTests: XCTestCase {
         zip.replaceSubrange(0..<4, with: [0x50, 0x4b, 3, 4])
         let archive = root.appendingPathComponent("restored.zip")
         try zip.write(to: archive)
-        let process = Process(), pipe = Pipe()
+        let extractedDirectory = root.appendingPathComponent("extracted", isDirectory: true)
+        let process = Process(), errors = Pipe()
+        // macOS unzip can fail to match UTF-8 entry names. Extract with the native
+        // archive reader, then verify the actual filename and bytes independently.
+        #if os(macOS)
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/ditto")
+        process.arguments = ["-x", "-k", archive.path, extractedDirectory.path]
+        #else
         process.executableURL = URL(fileURLWithPath: "/usr/bin/unzip")
-        process.arguments = ["-p", archive.path, name]
-        process.standardOutput = pipe; process.standardError = FileHandle.nullDevice
+        process.arguments = ["-q", archive.path, "-d", extractedDirectory.path]
+        #endif
+        process.standardOutput = FileHandle.nullDevice; process.standardError = errors
         try process.run()
-        let extracted = pipe.fileHandleForReading.readDataToEndOfFile(); process.waitUntilExit()
-        XCTAssertEqual(process.terminationStatus, 0)
+        let diagnostic = errors.fileHandleForReading.readDataToEndOfFile(); process.waitUntilExit()
+        XCTAssertEqual(process.terminationStatus, 0, String(decoding: diagnostic, as: UTF8.self))
+        let names = try FileManager.default.contentsOfDirectory(atPath: extractedDirectory.path)
+        XCTAssertEqual(names, [name])
+        let extracted = try Data(contentsOf: extractedDirectory.appendingPathComponent(name))
         XCTAssertEqual(extracted, bytes)
     }
     func testConnectionCheckAcceptsFTPAndCreatesNoJob() async throws {
