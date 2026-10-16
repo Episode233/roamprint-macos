@@ -75,6 +75,18 @@ jobs:
           mkdir -p dist
           bash "$ROAMPRINT_PROJECT_DIR/scripts/build-macos.sh" 2>&1 | tee dist/build.log
 
+      - name: Report build failure details
+        if: failure()
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          log = Path("dist/build.log")
+          if log.is_file():
+              tail = "\n".join(log.read_text(errors="replace").splitlines()[-30:])
+              escaped = tail.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+              print("::error title=macOS build log (last 30 lines)::" + escaped)
+          PY
+
       - name: Package downloads
         run: |
           /usr/bin/ditto -c -k --sequesterRsrc --keepParent \
