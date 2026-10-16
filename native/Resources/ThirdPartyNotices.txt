@@ -1,4 +1,4 @@
-ZGCAxZGCIprinter - Third-party notices
+ZGCAxZGCI printer - Third-party notices
 
 Twofish implementation version 0.3
 Copyright (c) 2002 by Niels Ferguson.

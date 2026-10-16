@@ -37,7 +37,7 @@ public struct KeychainLoginStore: LoginCredentialStoring {
         let data = try JSONEncoder().encode(Record(username: credentials.username,
             password: credentials.password, kind: credentials.kind))
         let attributes: [String: Any] = [kSecValueData as String: data,
-                                       kSecAttrLabel as String: "ZGCAxZGCIprinter 登录信息"]
+                                       kSecAttrLabel as String: "ZGCAxZGCI printer 登录信息"]
         let request = query(platform)
         var status = SecItemUpdate(request as CFDictionary, attributes as CFDictionary)
         if status == errSecItemNotFound {

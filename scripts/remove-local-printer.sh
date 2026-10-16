@@ -6,7 +6,7 @@ if [[ "$(uname -s)" != Darwin || "$EUID" -eq 0 ]]; then
 fi
 if printer_details=$(/usr/bin/lpstat -v ZGCAxZGCIprinter 2>/dev/null); then
     if [[ "$printer_details" != *": ipp://127.0.0.1:19963/ipp/print" ]]; then
-        echo "ZGCAxZGCIprinter 队列当前使用不同地址，请手动检查后处理。" >&2
+        echo "ZGCAxZGCI printer 队列当前使用不同地址，请手动检查后处理。" >&2
         exit 1
     fi
 fi

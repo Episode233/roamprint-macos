@@ -2,17 +2,17 @@
 
 项目替换 Intel 客户端的本地提交部分：macOS 打印菜单 → 本地待提交列表 → 企业平台 → 打印机刷卡取件。它不会向实体打印机直接发送打印数据。目标平台为 `http://10.1.8.5/xzentprint`，使用 V5 协议。
 
-GitHub 的 macOS 15 ARM64 runner 已通过测试、发布编译、架构检查、应用签名校验及 PKG 打包，见 [成功构建记录](https://github.com/Episode233/roamprint-macos/actions/runs/38873731293)。可在最新成功的运行中下载 [ZGCAxZGCIprinter-arm64](https://github.com/Episode233/roamprint-macos/actions/runs/38873731293/artifacts/12034147884)，解压后安装 `ZGCAxZGCIprinter-1.0.0-arm64.pkg`。用户 macOS 27.0 上的安装、打印菜单及真实平台刷卡取件仍需现场验证。
+GitHub 的 macOS 15 ARM64 runner 已通过测试、发布编译、架构检查、应用签名校验及 PKG 打包，见 [成功构建记录](https://github.com/Episode233/roamprint-macos/actions/runs/38873731293)。可在最新成功的运行中下载 [ZGCAxZGCI printer-arm64](https://github.com/Episode233/roamprint-macos/actions/runs/38873731293/artifacts/12034147884)，解压后安装 `ZGCAxZGCI printer-1.0.0-arm64.pkg`。用户 macOS 27.0 上的安装、打印菜单及真实平台刷卡取件仍需现场验证。
 
 ## 用 GitHub 构建（本地无需开发环境）
 
 现有 [roamprint-macos 仓库](https://github.com/Episode233/roamprint-macos) 已包含展开的源码和工作流，可直接进入 Actions 运行构建，无需重新上传。以下步骤用于在另一个仓库使用可见文件构建包：
 
 1. 在 [GitHub 新建仓库](https://github.com/new)，勾选创建 README。
-2. 解压 `ZGCAxZGCIprinter-1.0.0-build-kit.zip`。在仓库选择 **Add file → Upload files**，将其中的 **RoamPrint-source.zip 原样上传到仓库根目录**并提交；不要解压内层源码 ZIP，也不要上传外层构建包。
+2. 解压 `ZGCAxZGCI printer-1.0.0-build-kit.zip`。在仓库选择 **Add file → Upload files**，将其中的 **RoamPrint-source.zip 原样上传到仓库根目录**并提交；不要解压内层源码 ZIP，也不要上传外层构建包。
 3. 打开可见文件 **macos-build.yml** 并复制全部内容。在 GitHub 选择 **Add file → Create new file**，文件名填 `.github/workflows/macos.yml`，粘贴并提交。这是 GitHub 固定要求的工作流路径；通过网页创建，无需上传隐藏文件。
 4. 提交工作流后，Actions 中的 **Build macOS ARM64** 会自动运行；也可点击 **Run workflow**。
-5. 构建成功后打开对应运行，在 **Artifacts** 下载 **ZGCAxZGCIprinter-arm64**，解压得到 `ZGCAxZGCIprinter-1.0.0-arm64.pkg`，双击安装即可。也提供应用 ZIP 和 SHA256 校验文件；下载结果保留 30 天，过期可重新运行工作流。
+5. 构建成功后打开对应运行，在 **Artifacts** 下载 **ZGCAxZGCI printer-arm64**，解压得到 `ZGCAxZGCI printer-1.0.0-arm64.pkg`，双击安装即可。也提供应用 ZIP 和 SHA256 校验文件；下载结果保留 30 天，过期可重新运行工作流。
 
 构建包和内层源码 ZIP 均不包含隐藏文件。独立操作指南见 [构建包使用说明](macos-build-kit.md)。
 
@@ -20,7 +20,7 @@ GitHub 的 macOS 15 ARM64 runner 已通过测试、发布编译、架构检查�
 
 默认产物为本地 ad-hoc 签名，未做 Apple 公证。下载后如果 macOS 阻止打开，在“系统设置 → 隐私与安全性”中对已确认来源的安装包或应用选择“仍要打开”；不需要全局关闭系统安全设置。
 
-如果构建失败，Actions 注释会显示 Swift 编译和测试诊断，以及构建日志的最后 30 行；完整日志可在 **ZGCAxZGCIprinter-build-log** 下载。
+如果构建失败，Actions 注释会显示 Swift 编译和测试诊断，以及构建日志的最后 30 行；完整日志可在 **ZGCAxZGCI printer-build-log** 下载。
 
 ## 在 Mac 本地构建（可选）
 
@@ -30,31 +30,35 @@ GitHub 的 macOS 15 ARM64 runner 已通过测试、发布编译、架构检查�
 bash scripts/build-macos.sh
 ```
 
-输出 `dist/ZGCAxZGCIprinter.app` 和 `dist/ZGCAxZGCIprinter-1.0.0-arm64.pkg`。两个可执行文件都要求包含 ARM64 架构，不调用 Intel 客户端，不需要 Rosetta。默认使用 ad-hoc 本地签名；如有 Developer ID，可通过环境变量 `ROAMPRINT_SIGN_IDENTITY` 和 `ROAMPRINT_INSTALLER_IDENTITY` 设置 Application、Installer 身份，再完成 Apple 公证。脚本不会自动公证或上传文件。
+输出 `dist/ZGCAxZGCI printer.app` 和 `dist/ZGCAxZGCI printer-1.0.0-arm64.pkg`。两个可执行文件都要求包含 ARM64 架构，不调用 Intel 客户端，不需要 Rosetta。默认使用 ad-hoc 本地签名；如有 Developer ID，可通过环境变量 `ROAMPRINT_SIGN_IDENTITY` 和 `ROAMPRINT_INSTALLER_IDENTITY` 设置 Application、Installer 身份，再完成 Apple 公证。脚本不会自动公证或上传文件。
 
 ## 安装并接入打印菜单
 
-从 0.2.0 升级时，先退出旧版应用。安装后打开 `/Applications/ZGCAxZGCIprinter.app`，再点击一次“添加到打印菜单”，将本地收集服务更新为新版路径。确认新版正常后可将旧的 `/Applications/RoamPrint.app` 移到废纸篓。已有作业目录、钥匙串 service 和应用标识保持不变。
+从旧名称版本升级时，先退出旧版应用。安装后打开 `/Applications/ZGCAxZGCI printer.app`，再点击一次“添加到打印菜单”，将本地收集服务更新为新版路径。确认新版正常后可将旧的 `/Applications/ZGCAxZGCIprinter.app` 或 `/Applications/RoamPrint.app` 移到废纸篓。已有作业目录、钥匙串 service 和应用标识保持不变。
 
 安装脚本使用 macOS 自带工具，无需 Xcode 或 Command Line Tools。旧版触发的开发工具安装弹窗可取消；安装修复版后重新点击“添加到打印菜单”。
 
-PKG 安装后打开 ZGCAxZGCIprinter，点击“添加到打印菜单”，在打开的终端窗口输入管理员密码即可。此操作由当前登录用户启用本地打印服务。也可以从终端运行：
+PKG 安装后打开 ZGCAxZGCI printer，点击“添加到打印菜单”，在打开的终端窗口输入管理员密码即可。此操作由当前登录用户启用本地打印服务。也可以从终端运行：
 
 ```bash
-bash /Applications/ZGCAxZGCIprinter.app/Contents/Resources/install-local-printer.sh
-open /Applications/ZGCAxZGCIprinter.app
+bash "/Applications/ZGCAxZGCI printer.app/Contents/Resources/install-local-printer.sh"
+open "/Applications/ZGCAxZGCI printer.app"
 ```
 
-脚本将用户 LaunchAgent 写入 `~/Library/LaunchAgents/org.local.roamprint.capture.plist`，并通过管理员授权的 `lpadmin` 添加“ZGCAxZGCIprinter”，队列名和显示名均使用用户指定的名称。服务只监听 `127.0.0.1:19963`；队列地址为 `ipp://127.0.0.1:19963/ipp/print`。不会写入 `/usr/libexec/cups/backend` 等受保护目录。
+脚本将用户 LaunchAgent 写入 `~/Library/LaunchAgents/org.local.roamprint.capture.plist`，并通过管理员授权的 `lpadmin` 添加“ZGCAxZGCI printer”，显示名称为 `ZGCAxZGCI printer`。CUPS 不允许内部队列标识包含空格，因此内部标识继续使用 `ZGCAxZGCIprinter`；重新运行安装会更新已有队列的显示名称和 PPD。服务只监听 `127.0.0.1:19963`；队列地址为 `ipp://127.0.0.1:19963/ipp/print`。不会写入 `/usr/libexec/cups/backend` 等受保护目录。
+
+如果 `lpadmin` 提示“打印机驱动程序已弃用”，这是 CUPS 对 PPD 驱动方式的弃用提醒。当前添加成功即可继续测试使用；将来若系统升级到移除 PPD 支持的 CUPS 版本，需要迁移打印接入方式。当前仍使用已安装成功的 PPD 方案。
 
 本版本按单个登录用户设计。同一台 Mac 的快速用户切换、多用户同时登录尚未支持；这些场景不要启用此队列，以免作业进入另一用户的本地服务。企业平台访问需要连接相应内网，macOS 出现本地网络访问提示时，需要允许应用连接打印平台。
 
 ## 使用
 
-1. 连接企业内网，在 ZGCAxZGCIprinter 点击“检测连接”。成功表示已取得平台令牌和存储配置，不会创建打印任务，也不代表账号及文件上传已经验证。原生网络请求不受浏览器 CORS 限制；网络不通时仍会报错。
-2. 从文档的 macOS 打印菜单选择“ZGCAxZGCIprinter”，设置份数和双面等选项。Word、Excel、PPT 等由各自应用通过系统打印，不需要手动转换文件。收到后客户端会打开待提交界面。页面范围和每页多版尚需 Mac 实测；若收集服务拒绝这些选项，可先在来源应用生成已选好页面、完成排版的文档。
+没有文件时，导入区占满窗口内容区；导入文件后显示左右列表与详情。删除最后一条记录后自动恢复完整导入区。
+
+1. 连接企业内网，在 ZGCAxZGCI printer 点击“检测连接”。成功表示已取得平台令牌和存储配置，不会创建打印任务，也不代表账号及文件上传已经验证。原生网络请求不受浏览器 CORS 限制；网络不通时仍会报错。
+2. 从文档的 macOS 打印菜单选择“ZGCAxZGCI printer”，设置份数和双面等选项。Word、Excel、PPT 等由各自应用通过系统打印，不需要手动转换文件。收到后客户端会打开待提交界面。页面范围和每页多版尚需 Mac 实测；若收集服务拒绝这些选项，可先在来源应用生成已选好页面、完成排版的文档。
 3. 也可以点击“导入文件”选择文档，或从 Finder 拖拽一个或多个文件到窗口；不限扩展名，保留原文件名和内容提交；单个文件最大 128 MB。Office、图片等原文件能否被平台处理，需要实际提交验证，客户端不自行转换。无法预先识别页数时显示“页数由平台识别”。
-4. 在 ZGCAxZGCIprinter 中检查待提交文档和打印参数，输入打印账号、密码，点击“提交并等待刷卡取件”。修改的参数会随提交一起保存，无需单独保存。默认勾选“记住登录信息”：成功提交后将账号密码存入当前用户的 macOS 钥匙串，下次启动自动填写。
+4. 在 ZGCAxZGCI printer 中检查待提交文档和打印参数，输入打印账号、密码，点击“提交并等待刷卡取件”。修改的参数会随提交一起保存，无需单独保存。默认勾选“记住登录信息”：成功提交后将账号密码存入当前用户的 macOS 钥匙串，下次启动自动填写。
 5. 作业状态变为“已提交，请刷卡取件”后，到打印机刷卡释放。系统队列完成只表示文档已经进入本地待提交列表。
 
 默认地址是 `http://10.1.8.5/xzentprint/services`。应用设置允许输入登录页地址 `http://10.1.8.5/xzentprint/Login.aspx`，会转换为服务地址。当前不提供 V6 平台选项。
@@ -81,7 +85,7 @@ open /Applications/ZGCAxZGCIprinter.app
 ## 停用打印菜单接入
 
 ```bash
-bash /Applications/ZGCAxZGCIprinter.app/Contents/Resources/remove-local-printer.sh
+bash "/Applications/ZGCAxZGCI printer.app/Contents/Resources/remove-local-printer.sh"
 ```
 
 这会卸载用户 LaunchAgent 和系统打印队列，保留本地文档。确认已经处理平台作业和本地文件后，再自行删除应用。

@@ -1,4 +1,4 @@
-# ZGCAxZGCIprinter
+# ZGCAxZGCI printer
 
 为 Apple Silicon（M 系列芯片）重写的原生企业漫游打印客户端，使用 SwiftUI 和可移植 C 源码，构建为 ARM64，无需 Rosetta。
 
@@ -10,10 +10,11 @@
 
 ## 功能
 
-- 添加“ZGCAxZGCIprinter”系统打印队列，在 Word、Excel、PPT 等应用中直接使用 macOS 打印菜单。
+- 添加“ZGCAxZGCI printer”系统打印队列，在 Word、Excel、PPT 等应用中直接使用 macOS 打印菜单。
 - 设置份数、颜色、单双面、纸张、方向和逐份打印；提交到平台后刷卡释放。
 - 默认记住登录信息，成功提交后保存到 macOS 钥匙串，下次启动自动填写。
 - 支持选择文件或从 Finder 拖拽文件到窗口导入，不限扩展名，保留原文件名及内容；平台能否处理相应格式仍需内网实测。单个文件最大 128 MB。
+- 无文件时显示完整导入区，有文件后显示列表与详情。
 - 列表支持直接点击垃圾桶、右键或 Delete 键删除上传记录；点击空白取消选择后，刷新会保持未选中状态。
 - 保留本地待提交列表、显示连接和提交错误、复制诊断信息；提交结果不明时保留作业，避免重复创建。
 - 使用原客户端的 V5 提交流程，支持 FTP、HTTP/HTTPS WebDAV 和原文件编码。
@@ -22,15 +23,15 @@
 
 ## GitHub 云端构建，无需本地开发环境
 
-现有仓库已成功完成 [macOS ARM64 构建](https://github.com/Episode233/roamprint-macos/actions/runs/38873731293)。可在最新成功的运行中下载 [ZGCAxZGCIprinter-arm64 安装包](https://github.com/Episode233/roamprint-macos/actions/runs/38873731293/artifacts/12034147884)，解压后安装 `ZGCAxZGCIprinter-1.0.0-arm64.pkg`。下载需登录 GitHub，产物保留 30 天；过期后可在 Actions 重新运行构建。现有仓库直接维护展开的源码，无需再上传源码 ZIP。
+现有仓库已成功完成 [macOS ARM64 构建](https://github.com/Episode233/roamprint-macos/actions/runs/38873731293)。可在最新成功的运行中下载 [ZGCAxZGCI printer-arm64 安装包](https://github.com/Episode233/roamprint-macos/actions/runs/38873731293/artifacts/12034147884)，解压后安装 `ZGCAxZGCI printer-1.0.0-arm64.pkg`。下载需登录 GitHub，产物保留 30 天；过期后可在 Actions 重新运行构建。现有仓库直接维护展开的源码，无需再上传源码 ZIP。
 
 如需在另一个仓库使用可见文件构建包：
 
-交付文件 `ZGCAxZGCIprinter-1.0.0-build-kit.zip` 及其中的源码 ZIP 均不含隐藏文件。
+交付文件 `ZGCAxZGCI printer-1.0.0-build-kit.zip` 及其中的源码 ZIP 均不含隐藏文件。
 
 1. 解压构建包，将其中的 **RoamPrint-source.zip 原样上传**到 GitHub 仓库根目录，不要解压这个内层 ZIP。
 2. 在 GitHub 网页选择 **Add file → Create new file**，文件名填 `.github/workflows/macos.yml`，粘贴可见文件 **macos-build.yml** 的全部内容并提交。此路径由 GitHub 固定要求，在网页创建即可，无需上传本地隐藏文件。
-3. 打开 **Actions → Build macOS ARM64**，构建成功后下载 **ZGCAxZGCIprinter-arm64**，解压得到 `ZGCAxZGCIprinter-1.0.0-arm64.pkg`。
+3. 打开 **Actions → Build macOS ARM64**，构建成功后下载 **ZGCAxZGCI printer-arm64**，解压得到 `ZGCAxZGCI printer-1.0.0-arm64.pkg`。
 
 完整步骤见 [构建包使用说明](docs/macos-build-kit.md)。安装后打开应用，点击“添加到打印菜单”完成队列设置。本地无需安装 Xcode、Swift、Homebrew 或 Node。
 

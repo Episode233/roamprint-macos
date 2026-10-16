@@ -222,16 +222,16 @@ public actor IPPHandler {
             .text("job-name", job.title, tag: 0x42, group: 2),
             .integer("job-state", job.state, tag: 0x23, group: 2),
             .text("job-state-reasons", job.state == 9 ? "job-completed-successfully" : job.state == 7 ? "job-canceled-by-user" : job.state == 8 ? "aborted-by-system" : "none", group: 2),
-            .text("job-state-message", job.state == 9 ? "Captured locally. Submit in ZGCAxZGCIprinter, then release by card." : "Receiving local PDF", tag: 0x41, group: 2)
+            .text("job-state-message", job.state == 9 ? "Captured locally. Submit in ZGCAxZGCI printer, then release by card." : "Receiving local PDF", tag: 0x41, group: 2)
         ]
     }
     private func printerAttributes() -> [IPPAttribute] {
         var result: [IPPAttribute] = [
             .text("printer-uri-supported", Self.printerURI, tag: 0x45),
             .text("uri-authentication-supported", "none"), .text("uri-security-supported", "none"),
-            .text("printer-name", "ZGCAxZGCIprinter", tag: 0x42),
-            .text("printer-info", "ZGCAxZGCIprinter", tag: 0x41),
-            .text("printer-make-and-model", "ZGCAxZGCIprinter", tag: 0x41),
+            .text("printer-name", "ZGCAxZGCI printer", tag: 0x42),
+            .text("printer-info", "ZGCAxZGCI printer", tag: 0x41),
+            .text("printer-make-and-model", "ZGCAxZGCI printer", tag: 0x41),
             .integer("printer-state", 3, tag: 0x23), .text("printer-state-reasons", "none"),
             .boolean("printer-is-accepting-jobs", true), .integer("queued-job-count", jobs.values.filter { $0.state == 3 || $0.state == 5 }.count),
             .integer("printer-up-time", Int(Date().timeIntervalSince(start))),

@@ -8,7 +8,7 @@ struct ClientView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("ZGCAxZGCIprinter").font(.title2.bold())
+                Text("ZGCAxZGCI printer").font(.title2.bold())
                 Spacer()
                 Button { model.importFiles() } label: { Label("导入文件", systemImage: "plus") }
                     .disabled(model.busy)
@@ -19,50 +19,44 @@ struct ClientView: View {
                     .help("打开打印平台")
             }.padding()
             Divider()
-            HSplitView {
-                List(selection: $model.selectedID) {
-                    ForEach(model.jobs) { job in
-                        HStack {
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text(job.document.title).lineLimit(1)
-                                Text("\(job.document.pageDescription) · \(job.state.label)")
-                                    .font(.caption).foregroundStyle(.secondary)
-                            }.frame(maxWidth: .infinity, alignment: .leading)
-                            Button(role: .destructive) { model.remove(job) } label: {
-                                Image(systemName: "trash")
-                            }
-                            .buttonStyle(.borderless)
-                            .disabled(!model.canRemove(job))
-                            .help("删除上传记录")
-                            .accessibilityLabel("删除上传记录：\(job.document.title)")
-                        }.padding(.vertical, 5).tag(job.id)
-                        .contextMenu {
-                            Button("删除上传记录", role: .destructive) { model.remove(job) }
+            if model.jobs.isEmpty {
+                importPlaceholder
+            } else {
+                HSplitView {
+                    List(selection: $model.selectedID) {
+                        ForEach(model.jobs) { job in
+                            HStack {
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text(job.document.title).lineLimit(1)
+                                    Text("\(job.document.pageDescription) · \(job.state.label)")
+                                        .font(.caption).foregroundStyle(.secondary)
+                                }.frame(maxWidth: .infinity, alignment: .leading)
+                                Button(role: .destructive) { model.remove(job) } label: {
+                                    Image(systemName: "trash")
+                                }
+                                .buttonStyle(.borderless)
                                 .disabled(!model.canRemove(job))
+                                .help("删除上传记录")
+                                .accessibilityLabel("删除上传记录：\(job.document.title)")
+                            }.padding(.vertical, 5).tag(job.id)
+                            .contextMenu {
+                                Button("删除上传记录", role: .destructive) { model.remove(job) }
+                                    .disabled(!model.canRemove(job))
+                            }
                         }
                     }
-                }
-                .onDeleteCommand {
-                    if let job = model.selectedJob { model.remove(job) }
-                }
-                .frame(minWidth: 250, idealWidth: 310)
-                Group {
-                    if let job = model.selectedJob {
-                        JobDetailView(model: model, job: job).id(job.id)
-                    } else {
-                        VStack(spacing: 12) {
-                            Image(systemName: "doc.badge.plus").font(.system(size: 38)).foregroundStyle(.secondary)
-                            Text(model.jobs.isEmpty ? "尚无待提交文档" : "未选择文档").font(.title3)
-                            Text(model.jobs.isEmpty
-                                 ? "将文件拖到此窗口，或点击“导入文件”。\n也可从系统打印菜单选择“ZGCAxZGCIprinter”。"
-                                 : "选择左侧记录查看详情，或拖入新文件。")
-                                .multilineTextAlignment(.center).foregroundStyle(.secondary)
-                            Button("导入文件") { model.importFiles() }.disabled(model.busy)
-                            Text("直接导入不限格式，按原文件提交；解析能力取决于打印平台。")
-                                .font(.caption).foregroundStyle(.secondary)
-                        }.frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .onDeleteCommand {
+                        if let job = model.selectedJob { model.remove(job) }
                     }
-                }.frame(minWidth: 440)
+                    .frame(minWidth: 250, idealWidth: 310)
+                    Group {
+                        if let job = model.selectedJob {
+                            JobDetailView(model: model, job: job).id(job.id)
+                        } else {
+                            importPlaceholder
+                        }
+                    }.frame(minWidth: 440)
+                }
             }
             Divider()
             VStack(alignment: .leading, spacing: 10) {
@@ -103,6 +97,20 @@ struct ClientView: View {
         .alert("打印提示", isPresented: Binding(get: { model.alert != nil }, set: { if !$0 { model.alert = nil } })) {
             Button("知道了", role: .cancel) { model.alert = nil }
         } message: { Text(model.alert ?? "") }
+    }
+
+    private var importPlaceholder: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "doc.badge.plus").font(.system(size: 38)).foregroundStyle(.secondary)
+            Text(model.jobs.isEmpty ? "尚无待提交文档" : "未选择文档").font(.title3)
+            Text(model.jobs.isEmpty
+                 ? "将文件拖到此窗口，或点击“导入文件”。\n也可从系统打印菜单选择“ZGCAxZGCI printer”。"
+                 : "选择左侧记录查看详情，或拖入新文件。")
+                .multilineTextAlignment(.center).foregroundStyle(.secondary)
+            Button("导入文件") { model.importFiles() }.disabled(model.busy)
+            Text("直接导入不限格式，按原文件提交；解析能力取决于打印平台。")
+                .font(.caption).foregroundStyle(.secondary)
+        }.frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

@@ -7,7 +7,7 @@ if [[ "$(uname -s)" != Darwin ]]; then
 fi
 repo_dir=$(cd "$(dirname "$0")/.." && pwd)
 output_dir=${ROAMPRINT_OUTPUT_DIR:-"$repo_dir/dist"}
-app_path="$output_dir/ZGCAxZGCIprinter.app"
+app_path="$output_dir/ZGCAxZGCI printer.app"
 signing_identity=${ROAMPRINT_SIGN_IDENTITY:--}
 installer_identity=${ROAMPRINT_INSTALLER_IDENTITY:-}
 # Change the release version only when explicitly specified by the user.
@@ -26,7 +26,7 @@ if [[ -e "$app_path" ]]; then
     exit 1
 fi
 mkdir -p "$app_path/Contents/MacOS" "$app_path/Contents/Resources/bin"
-/usr/bin/install -m 755 "$binary_dir/RoamPrint" "$app_path/Contents/MacOS/ZGCAxZGCIprinter"
+/usr/bin/install -m 755 "$binary_dir/RoamPrint" "$app_path/Contents/MacOS/ZGCAxZGCI printer"
 /usr/bin/install -m 755 "$binary_dir/roamprint-service" "$app_path/Contents/Resources/bin/roamprint-service"
 /usr/bin/install -m 644 "$repo_dir/native/Resources/RoamPrint.ppd" "$app_path/Contents/Resources/RoamPrint.ppd"
 /usr/bin/install -m 755 "$repo_dir/scripts/install-local-printer.sh" "$app_path/Contents/Resources/install-local-printer.sh"
@@ -39,9 +39,9 @@ cat > "$app_path/Contents/Info.plist" <<'PLIST'
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
 <key>CFBundleIdentifier</key><string>org.local.roamprint</string>
-<key>CFBundleName</key><string>ZGCAxZGCIprinter</string>
-<key>CFBundleDisplayName</key><string>ZGCAxZGCIprinter</string>
-<key>CFBundleExecutable</key><string>ZGCAxZGCIprinter</string>
+<key>CFBundleName</key><string>ZGCAxZGCI printer</string>
+<key>CFBundleDisplayName</key><string>ZGCAxZGCI printer</string>
+<key>CFBundleExecutable</key><string>ZGCAxZGCI printer</string>
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>CFBundleShortVersionString</key><string>1.0.0</string>
 <key>CFBundleVersion</key><string>3</string>
@@ -57,7 +57,7 @@ PLIST
 /usr/bin/codesign --force --options runtime --sign "$signing_identity" "$app_path"
 /usr/bin/codesign --verify --deep --strict "$app_path"
 
-pkg_path="$output_dir/ZGCAxZGCIprinter-$version-arm64.pkg"
+pkg_path="$output_dir/ZGCAxZGCI printer-$version-arm64.pkg"
 if [[ -e "$pkg_path" ]]; then
     echo "输出已存在：$pkg_path。请移走该文件后重新构建。" >&2
     exit 1
@@ -65,13 +65,13 @@ fi
 # Always install at the new application path, even if an older RoamPrint.app exists.
 package_root="$output_dir/pkg-root"
 mkdir "$package_root"
-/usr/bin/ditto "$app_path" "$package_root/ZGCAxZGCIprinter.app"
+/usr/bin/ditto "$app_path" "$package_root/ZGCAxZGCI printer.app"
 component_plist="$output_dir/component.plist"
 cat > "$component_plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><array><dict>
-<key>RootRelativeBundlePath</key><string>ZGCAxZGCIprinter.app</string>
+<key>RootRelativeBundlePath</key><string>ZGCAxZGCI printer.app</string>
 <key>BundleIsRelocatable</key><false/>
 </dict></array></plist>
 PLIST

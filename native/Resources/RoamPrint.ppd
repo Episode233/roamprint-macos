@@ -4,11 +4,11 @@
 *LanguageVersion: English
 *LanguageEncoding: ISOLatin1
 *PCFileName: "ROAMPRNT.PPD"
-*Manufacturer: "ZGCAxZGCIprinter"
-*Product: "(ZGCAxZGCIprinter)"
-*ModelName: "ZGCAxZGCIprinter"
-*ShortNickName: "ZGCAxZGCIprinter"
-*NickName: "ZGCAxZGCIprinter"
+*Manufacturer: "ZGCAxZGCI printer"
+*Product: "(ZGCAxZGCI printer)"
+*ModelName: "ZGCAxZGCI printer"
+*ShortNickName: "ZGCAxZGCI printer"
+*NickName: "ZGCAxZGCI printer"
 *PSVersion: "(3010.000) 0"
 *LanguageLevel: "3"
 *ColorDevice: True

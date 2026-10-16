@@ -5,20 +5,21 @@ if [[ "$(uname -s)" != Darwin || "$EUID" -eq 0 ]]; then
     exit 1
 fi
 script_dir=$(cd "$(dirname "$0")" && pwd)
-app_path=${1:-/Applications/ZGCAxZGCIprinter.app}
+app_path=${1:-"/Applications/ZGCAxZGCI printer.app"}
 if [[ "$script_dir" == */Contents/Resources ]]; then app_path=${1:-${script_dir%/Contents/Resources}}; fi
 service_path="$app_path/Contents/Resources/bin/roamprint-service"
 ppd_path="$app_path/Contents/Resources/RoamPrint.ppd"
 if [[ ! -x "$service_path" || ! -f "$ppd_path" ]]; then
-    echo "找不到完整的 ZGCAxZGCIprinter.app：$app_path" >&2
+    echo "找不到完整的 ZGCAxZGCI printer.app：$app_path" >&2
     exit 1
 fi
 # The build verifies the packaged binaries. lipo on a user's Mac may invoke
 # xcode-select and request developer tools, which installation does not need.
 printer_exists=false
+# CUPS queue identifiers cannot contain spaces; -D sets the name shown to users.
 if printer_details=$(/usr/bin/lpstat -v ZGCAxZGCIprinter 2>/dev/null); then
     if [[ "$printer_details" != *": ipp://127.0.0.1:19963/ipp/print" ]]; then
-        echo "同名 ZGCAxZGCIprinter 队列已存在且使用不同地址，请先处理该队列。" >&2
+        echo "同名 ZGCAxZGCI printer 队列已存在且使用不同地址，请先处理该队列。" >&2
         exit 1
     fi
     printer_exists=true
@@ -97,13 +98,16 @@ if [[ "$ready" != true ]]; then
     echo "本地收集服务尚未监听 19963（可能端口被占用），查看 $log_dir/capture-error.log。" >&2
     exit 1
 fi
+echo "添加或更新 macOS 打印队列需要管理员权限。"
 if [[ "$printer_exists" != true ]]; then
-    echo "添加 macOS 打印队列需要管理员权限。"
     # Mark before invoking lpadmin, so a partially created queue is also rolled back.
     printer_created=true
-    /usr/bin/sudo /usr/sbin/lpadmin -p ZGCAxZGCIprinter -E \
-        -D "ZGCAxZGCIprinter" -L "提交到平台后刷卡取件" \
-        -v ipp://127.0.0.1:19963/ipp/print -P "$ppd_path" -o printer-is-shared=false
+fi
+# Update existing queues too, so upgrades apply the display and model names.
+/usr/bin/sudo /usr/sbin/lpadmin -p ZGCAxZGCIprinter -E \
+    -D "ZGCAxZGCI printer" -L "提交到平台后刷卡取件" \
+    -v ipp://127.0.0.1:19963/ipp/print -P "$ppd_path" -o printer-is-shared=false
+if [[ "$printer_exists" != true ]]; then
     /usr/bin/lpoptions -p ZGCAxZGCIprinter -o media=A4 -o ColorModel=Gray -o Duplex=None
 fi
-echo "已启用“ZGCAxZGCIprinter”。从系统打印菜单发送后，在 ZGCAxZGCIprinter 中确认并提交。"
+echo "已启用“ZGCAxZGCI printer”。从系统打印菜单发送后，在 ZGCAxZGCI printer 中确认并提交。"

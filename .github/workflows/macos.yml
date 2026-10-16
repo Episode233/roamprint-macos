@@ -91,15 +91,15 @@ jobs:
       - name: Package downloads
         run: |
           /usr/bin/ditto -c -k --sequesterRsrc --keepParent \
-            dist/ZGCAxZGCIprinter.app "dist/ZGCAxZGCIprinter-$ROAMPRINT_VERSION-arm64.app.zip"
+            "dist/ZGCAxZGCI printer.app" "dist/ZGCAxZGCI printer-$ROAMPRINT_VERSION-arm64.app.zip"
           cd dist
-          /usr/bin/shasum -a 256 "ZGCAxZGCIprinter-$ROAMPRINT_VERSION-arm64.pkg" \
-            "ZGCAxZGCIprinter-$ROAMPRINT_VERSION-arm64.app.zip" > SHA256SUMS
+          /usr/bin/shasum -a 256 "ZGCAxZGCI printer-$ROAMPRINT_VERSION-arm64.pkg" \
+            "ZGCAxZGCI printer-$ROAMPRINT_VERSION-arm64.app.zip" > SHA256SUMS
 
       - name: Upload ARM64 installer
         uses: actions/upload-artifact@v7
         with:
-          name: ZGCAxZGCIprinter-arm64
+          name: ZGCAxZGCI printer-arm64
           path: |
             dist/*.pkg
             dist/*.app.zip
@@ -111,7 +111,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: ZGCAxZGCIprinter-build-log
+          name: ZGCAxZGCI printer-build-log
           path: dist/build.log
           if-no-files-found: ignore
           retention-days: 7
