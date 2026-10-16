@@ -10,7 +10,8 @@ output_dir=${ROAMPRINT_OUTPUT_DIR:-"$repo_dir/dist"}
 app_path="$output_dir/ZGCAxZGCIprinter.app"
 signing_identity=${ROAMPRINT_SIGN_IDENTITY:--}
 installer_identity=${ROAMPRINT_INSTALLER_IDENTITY:-}
-version=${ROAMPRINT_VERSION:-0.2.1}
+# Change the release version only when explicitly specified by the user.
+version=${ROAMPRINT_VERSION:-1.0.0}
 mkdir -p "$output_dir"
 
 cd "$repo_dir/native"
@@ -42,7 +43,7 @@ cat > "$app_path/Contents/Info.plist" <<'PLIST'
 <key>CFBundleDisplayName</key><string>ZGCAxZGCIprinter</string>
 <key>CFBundleExecutable</key><string>ZGCAxZGCIprinter</string>
 <key>CFBundlePackageType</key><string>APPL</string>
-<key>CFBundleShortVersionString</key><string>0.2.1</string>
+<key>CFBundleShortVersionString</key><string>1.0.0</string>
 <key>CFBundleVersion</key><string>3</string>
 <key>LSMinimumSystemVersion</key><string>13.0</string>
 <key>NSHighResolutionCapable</key><true/>

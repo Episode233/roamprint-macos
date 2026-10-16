@@ -4,7 +4,7 @@
 
 ## 包里有哪些文件
 
-解压外层 `ZGCAxZGCIprinter-0.2.1-build-kit.zip`，打开 `ZGCAxZGCIprinter-macos-arm64` 文件夹，里面只有四个普通可见文件：
+解压外层 `ZGCAxZGCIprinter-1.0.0-build-kit.zip`，打开 `ZGCAxZGCIprinter-macos-arm64` 文件夹，里面只有四个普通可见文件：
 
 | 文件 | 用途 |
 | --- | --- |
@@ -17,7 +17,7 @@
 
 ## 在 GitHub 生成安装包
 
-现有 [roamprint-macos 仓库](https://github.com/Episode233/roamprint-macos) 已成功构建，可在最新成功的运行中下载 [ZGCAxZGCIprinter-arm64](https://github.com/Episode233/roamprint-macos/actions/runs/38848133220/artifacts/12023682895)，或进入 Actions 重新运行。下载需登录 GitHub，产物保留 30 天。现有仓库直接维护展开的源码，无需上传本构建包。
+现有 [roamprint-macos 仓库](https://github.com/Episode233/roamprint-macos) 已成功构建，可在最新成功的运行中下载 [ZGCAxZGCIprinter-arm64](https://github.com/Episode233/roamprint-macos/actions/workflows/macos.yml)，或进入 Actions 重新运行。下载需登录 GitHub，产物保留 30 天。现有仓库直接维护展开的源码，无需上传本构建包。
 
 以下步骤用于将构建包上传到另一个仓库：
 
@@ -32,7 +32,7 @@
    将工作流内容粘贴到正文，点击 **Commit changes**。GitHub 只在这个固定目录识别工作流；这里是在网页创建文件，不需要上传任何本地隐藏文件。
 
 4. 进入 **Actions → Build macOS ARM64**。提交工作流后会自动开始；未自动开始时点击 **Run workflow → Run workflow**。
-5. 等运行变绿，打开该次运行，在底部 **Artifacts** 下载 **ZGCAxZGCIprinter-arm64**。解压得到 **ZGCAxZGCIprinter-0.2.1-arm64.pkg**，双击安装。
+5. 等运行变绿，打开该次运行，在底部 **Artifacts** 下载 **ZGCAxZGCIprinter-arm64**。解压得到 **ZGCAxZGCIprinter-1.0.0-arm64.pkg**，双击安装。
 
 若运行变红，查看 Actions 注释中的 Swift 诊断和失败日志末尾，或下载 **ZGCAxZGCIprinter-build-log** 查看完整日志。构建时不需要填写或上传打印账号密码。
 

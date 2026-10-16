@@ -2,6 +2,8 @@
 
 为 Apple Silicon（M 系列芯片）重写的原生企业漫游打印客户端，使用 SwiftUI 和可移植 C 源码，构建为 ARM64，无需 Rosetta。
 
+当前发布版本为 **1.0.0**；仅在用户明确指定新版本号时修改，日常修复和重新构建不自动升版。
+
 `macOS 打印菜单 → 客户端确认参数 → 提交企业平台 → 到打印机刷卡取件`
 
 默认平台：`http://10.1.8.5/xzentprint/services`。
@@ -19,15 +21,15 @@
 
 ## GitHub 云端构建，无需本地开发环境
 
-现有仓库已成功完成 [macOS ARM64 构建](https://github.com/Episode233/roamprint-macos/actions/runs/38848133220)。可在最新成功的运行中下载 [ZGCAxZGCIprinter-arm64 安装包](https://github.com/Episode233/roamprint-macos/actions/runs/38848133220/artifacts/12023682895)，解压后安装 `ZGCAxZGCIprinter-0.2.1-arm64.pkg`。下载需登录 GitHub，产物保留 30 天；过期后可在 Actions 重新运行构建。现有仓库直接维护展开的源码，无需再上传源码 ZIP。
+现有仓库已成功完成 [macOS ARM64 构建](https://github.com/Episode233/roamprint-macos/actions/runs/38848133220)。可在最新成功的运行中下载 [ZGCAxZGCIprinter-arm64 安装包](https://github.com/Episode233/roamprint-macos/actions/workflows/macos.yml)，解压后安装 `ZGCAxZGCIprinter-1.0.0-arm64.pkg`。下载需登录 GitHub，产物保留 30 天；过期后可在 Actions 重新运行构建。现有仓库直接维护展开的源码，无需再上传源码 ZIP。
 
 如需在另一个仓库使用可见文件构建包：
 
-交付文件 `ZGCAxZGCIprinter-0.2.1-build-kit.zip` 及其中的源码 ZIP 均不含隐藏文件。
+交付文件 `ZGCAxZGCIprinter-1.0.0-build-kit.zip` 及其中的源码 ZIP 均不含隐藏文件。
 
 1. 解压构建包，将其中的 **RoamPrint-source.zip 原样上传**到 GitHub 仓库根目录，不要解压这个内层 ZIP。
 2. 在 GitHub 网页选择 **Add file → Create new file**，文件名填 `.github/workflows/macos.yml`，粘贴可见文件 **macos-build.yml** 的全部内容并提交。此路径由 GitHub 固定要求，在网页创建即可，无需上传本地隐藏文件。
-3. 打开 **Actions → Build macOS ARM64**，构建成功后下载 **ZGCAxZGCIprinter-arm64**，解压得到 `ZGCAxZGCIprinter-0.2.1-arm64.pkg`。
+3. 打开 **Actions → Build macOS ARM64**，构建成功后下载 **ZGCAxZGCIprinter-arm64**，解压得到 `ZGCAxZGCIprinter-1.0.0-arm64.pkg`。
 
 完整步骤见 [构建包使用说明](docs/macos-build-kit.md)。安装后打开应用，点击“添加到打印菜单”完成队列设置。本地无需安装 Xcode、Swift、Homebrew 或 Node。
 

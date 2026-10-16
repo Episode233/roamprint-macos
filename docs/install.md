@@ -2,17 +2,17 @@
 
 项目替换 Intel 客户端的本地提交部分：macOS 打印菜单 → 本地待提交列表 → 企业平台 → 打印机刷卡取件。它不会向实体打印机直接发送打印数据。目标平台为 `http://10.1.8.5/xzentprint`，使用 V5 协议。
 
-GitHub 的 macOS 15 ARM64 runner 已通过测试、发布编译、架构检查、应用签名校验及 PKG 打包，见 [成功构建记录](https://github.com/Episode233/roamprint-macos/actions/runs/38848133220)。可在最新成功的运行中下载 [ZGCAxZGCIprinter-arm64](https://github.com/Episode233/roamprint-macos/actions/runs/38848133220/artifacts/12023682895)，解压后安装 `ZGCAxZGCIprinter-0.2.1-arm64.pkg`。用户 macOS 27.0 上的安装、打印菜单及真实平台刷卡取件仍需现场验证。
+GitHub 的 macOS 15 ARM64 runner 已通过测试、发布编译、架构检查、应用签名校验及 PKG 打包，见 [成功构建记录](https://github.com/Episode233/roamprint-macos/actions/runs/38848133220)。可在最新成功的运行中下载 [ZGCAxZGCIprinter-arm64](https://github.com/Episode233/roamprint-macos/actions/workflows/macos.yml)，解压后安装 `ZGCAxZGCIprinter-1.0.0-arm64.pkg`。用户 macOS 27.0 上的安装、打印菜单及真实平台刷卡取件仍需现场验证。
 
 ## 用 GitHub 构建（本地无需开发环境）
 
 现有 [roamprint-macos 仓库](https://github.com/Episode233/roamprint-macos) 已包含展开的源码和工作流，可直接进入 Actions 运行构建，无需重新上传。以下步骤用于在另一个仓库使用可见文件构建包：
 
 1. 在 [GitHub 新建仓库](https://github.com/new)，勾选创建 README。
-2. 解压 `ZGCAxZGCIprinter-0.2.1-build-kit.zip`。在仓库选择 **Add file → Upload files**，将其中的 **RoamPrint-source.zip 原样上传到仓库根目录**并提交；不要解压内层源码 ZIP，也不要上传外层构建包。
+2. 解压 `ZGCAxZGCIprinter-1.0.0-build-kit.zip`。在仓库选择 **Add file → Upload files**，将其中的 **RoamPrint-source.zip 原样上传到仓库根目录**并提交；不要解压内层源码 ZIP，也不要上传外层构建包。
 3. 打开可见文件 **macos-build.yml** 并复制全部内容。在 GitHub 选择 **Add file → Create new file**，文件名填 `.github/workflows/macos.yml`，粘贴并提交。这是 GitHub 固定要求的工作流路径；通过网页创建，无需上传隐藏文件。
 4. 提交工作流后，Actions 中的 **Build macOS ARM64** 会自动运行；也可点击 **Run workflow**。
-5. 构建成功后打开对应运行，在 **Artifacts** 下载 **ZGCAxZGCIprinter-arm64**，解压得到 `ZGCAxZGCIprinter-0.2.1-arm64.pkg`，双击安装即可。也提供应用 ZIP 和 SHA256 校验文件；下载结果保留 30 天，过期可重新运行工作流。
+5. 构建成功后打开对应运行，在 **Artifacts** 下载 **ZGCAxZGCIprinter-arm64**，解压得到 `ZGCAxZGCIprinter-1.0.0-arm64.pkg`，双击安装即可。也提供应用 ZIP 和 SHA256 校验文件；下载结果保留 30 天，过期可重新运行工作流。
 
 构建包和内层源码 ZIP 均不包含隐藏文件。独立操作指南见 [构建包使用说明](macos-build-kit.md)。
 
@@ -30,7 +30,7 @@ GitHub 的 macOS 15 ARM64 runner 已通过测试、发布编译、架构检查�
 bash scripts/build-macos.sh
 ```
 
-输出 `dist/ZGCAxZGCIprinter.app` 和 `dist/ZGCAxZGCIprinter-0.2.1-arm64.pkg`。两个可执行文件都要求包含 ARM64 架构，不调用 Intel 客户端，不需要 Rosetta。默认使用 ad-hoc 本地签名；如有 Developer ID，可通过环境变量 `ROAMPRINT_SIGN_IDENTITY` 和 `ROAMPRINT_INSTALLER_IDENTITY` 设置 Application、Installer 身份，再完成 Apple 公证。脚本不会自动公证或上传文件。
+输出 `dist/ZGCAxZGCIprinter.app` 和 `dist/ZGCAxZGCIprinter-1.0.0-arm64.pkg`。两个可执行文件都要求包含 ARM64 架构，不调用 Intel 客户端，不需要 Rosetta。默认使用 ad-hoc 本地签名；如有 Developer ID，可通过环境变量 `ROAMPRINT_SIGN_IDENTITY` 和 `ROAMPRINT_INSTALLER_IDENTITY` 设置 Application、Installer 身份，再完成 Apple 公证。脚本不会自动公证或上传文件。
 
 ## 安装并接入打印菜单
 
