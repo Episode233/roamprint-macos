@@ -2,6 +2,16 @@
 
 最新验证日期：2026-10-17；以下历史记录保留各次实际验证日期。目标是 Apple Silicon 上保持“系统打印菜单 → 本地待提交 → 企业平台 → 刷卡释放”，不使用 Rosetta。
 
+## 1.0.0 清理旧 PPD 与参数兼容分支
+
+2026-10-17，[GitHub macOS 15 ARM64 构建 38999830857](https://github.com/Episode233/roamprint-macos/actions/runs/38999830857) 已成功，对应源码提交 `a8a585f09ef4219652959eeeda3794fb1f3997f4`。[安装包](https://github.com/Episode233/roamprint-macos/actions/runs/38999830857/artifacts/12089150223) 仍为 `ZGCAxZGCI printer-1.0.0-arm64.pkg`，内部构建号仍为 `3`。
+
+已删除旧 PPD 文件、旧队列迁移测试，以及 ColorModel、Duplex、PageSize、旧后端专有方向/逐份预设和 cups-pdf 类型的兼容解析。当前只使用标准 IPP 打印参数；文档原文件导入和企业平台提交流程保持原样。源码仓库及可见文件构建包均已检查不含 PPD 文件。
+
+Linux 42 项核心测试通过。macOS 完整测试、release 编译、架构检查、签名校验和打包通过。真实 CUPS 测试确认无 PPD 的应用可完成免驱队列配置，默认参数、A3 彩色 3 份长边双面、2 份非逐份短边双面、选页及每页多版均正确进入本地待提交列表。安装命令无驱动弃用提示。
+
+上述验证未连接企业内网，用户 macOS 27 与 Word/WPS 的现场打印及刷卡取件仍需验证。以下各节保留历史构建的实际结果。
+
 ## 1.0.0 免驱 IPP 迁移
 
 2026-10-17，[GitHub macOS 15 ARM64 构建 38998616202](https://github.com/Episode233/roamprint-macos/actions/runs/38998616202) 已成功，对应源码提交 `69d892cc9d4dab379e3f57aa822fe29241684ba2`。[安装包](https://github.com/Episode233/roamprint-macos/actions/runs/38998616202/artifacts/12087942431) 为 `ZGCAxZGCI printer-1.0.0-arm64.pkg`；发布版本仍为 `1.0.0`，内部构建号仍为 `3`。
@@ -16,7 +26,7 @@
 - 先用旧 PPD 创建测试队列并暂停一个作业，再原位升级为免驱队列：作业编号保留，恢复后成功进入待提交列表。
 - 所有捕获均为本地 `queued`，无平台任务编号，测试不连接企业平台。
 
-旧 PPD 仅保留在 `tools/fixtures/legacy-capture.ppd` 供迁移测试使用。测试构造旧队列时出现的弃用提示属于预期；实际安装脚本不使用该 PPD。原有 Swift 并发 Sendable 提醒仍在构建中出现，不影响本次验证通过。
+该次构建曾在 `tools/fixtures/legacy-capture.ppd` 保留旧 PPD 供迁移测试使用；该文件及迁移测试现已删除。该次测试构造旧队列时出现的弃用提示属于预期，安装脚本未使用该 PPD。原有 Swift 并发 Sendable 提醒仍在构建中出现，不影响本次验证通过。
 
 用户升级后需再点一次“添加到打印菜单”。macOS 27 上的真实 Word/WPS 打印及内网刷卡取件尚待现场验证；不承诺未经测试的未来系统永久兼容。
 

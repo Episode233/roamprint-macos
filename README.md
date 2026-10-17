@@ -10,7 +10,7 @@
 
 ## 功能
 
-- 通过免驱 IPP 添加“ZGCAxZGCI printer”系统打印队列，在 Word、Excel、PPT 等应用中直接使用 macOS 打印菜单；旧版升级后再点击一次“添加到打印菜单”即可更新队列。
+- 通过标准 IPP 自动读取打印能力，添加“ZGCAxZGCI printer”系统打印队列，在 Word、Excel、PPT 等应用中直接使用 macOS 打印菜单；旧版升级后再点击一次“添加到打印菜单”即可更新队列。
 - 设置份数、颜色、单双面、纸张、方向和逐份打印；提交到平台后刷卡释放。
 - 默认记住登录信息，成功提交后保存到 macOS 钥匙串，下次启动自动填写。
 - 支持选择文件或从 Finder 拖拽文件到窗口导入，不限扩展名，保留原文件名及内容；平台能否处理相应格式仍需内网实测。单个文件最大 128 MB。
@@ -23,7 +23,7 @@
 
 ## GitHub 云端构建，无需本地开发环境
 
-现有仓库已成功完成 [macOS ARM64 构建](https://github.com/Episode233/roamprint-macos/actions/runs/38998616202)。可在最新成功的运行中下载 [ZGCAxZGCI printer-arm64 安装包](https://github.com/Episode233/roamprint-macos/actions/runs/38998616202/artifacts/12087942431)，解压后安装 `ZGCAxZGCI printer-1.0.0-arm64.pkg`。下载需登录 GitHub，产物保留 30 天；过期后可在 Actions 重新运行构建。现有仓库直接维护展开的源码，无需再上传源码 ZIP。
+现有仓库已成功完成 [macOS ARM64 构建](https://github.com/Episode233/roamprint-macos/actions/runs/38999830857)。可在最新成功的运行中下载 [ZGCAxZGCI printer-arm64 安装包](https://github.com/Episode233/roamprint-macos/actions/runs/38999830857/artifacts/12089150223)，解压后安装 `ZGCAxZGCI printer-1.0.0-arm64.pkg`。下载需登录 GitHub，产物保留 30 天；过期后可在 Actions 重新运行构建。现有仓库直接维护展开的源码，无需再上传源码 ZIP。
 
 如需在另一个仓库使用可见文件构建包：
 
@@ -39,7 +39,7 @@
 
 已完成源码和云端构建配置，**42 项核心测试通过，0 失败**，覆盖真实 URLSession 请求、系统 curl 的 FTP/WebDAV 上传、原文件保留、刷卡任务参数和登录记忆逻辑。已验证原生请求可访问没有 CORS 响应头的测试接口。
 
-2026-10-17，GitHub 的 macOS 15 ARM64 runner 已通过完整测试（含真实钥匙串及界面模型测试）、发布编译、ARM64 架构检查、应用签名校验和 PKG 打包。实际 CUPS 测试已验证免驱队列发现、默认值与打印参数、选页、每页多版，以及保留待处理任务的旧队列迁移。用户 macOS 27.0 上的新版免驱接入和内网刷卡流程仍需实测。默认应用采用 ad-hoc 签名，未做 Apple 公证。
+2026-10-17，GitHub 的 macOS 15 ARM64 runner 已通过完整测试（含真实钥匙串及界面模型测试）、发布编译、ARM64 架构检查、应用签名校验和 PKG 打包。实际 CUPS 测试已验证免驱队列发现、默认值与打印参数、选页、每页多版，以及逐份/非逐份和长短边双面。用户 macOS 27.0 上的新版免驱接入和内网刷卡流程仍需实测。默认应用采用 ad-hoc 签名，未做 Apple 公证。
 
 - [安装、使用与验收](docs/install.md)
 - [V5 协议与 REA 证据](docs/protocol.md)
