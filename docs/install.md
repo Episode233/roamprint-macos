@@ -2,7 +2,7 @@
 
 项目替换 Intel 客户端的本地提交部分：macOS 打印菜单 → 本地待提交列表 → 企业平台 → 打印机刷卡取件。它不会向实体打印机直接发送打印数据。目标平台为 `http://10.1.8.5/xzentprint`，使用 V5 协议。
 
-GitHub 的 macOS 15 ARM64 runner 已通过测试、发布编译、架构检查、应用签名校验及 PKG 打包，见 [成功构建记录](https://github.com/Episode233/roamprint-macos/actions/runs/38873731293)。可在最新成功的运行中下载 [ZGCAxZGCI printer-arm64](https://github.com/Episode233/roamprint-macos/actions/runs/38873731293/artifacts/12034147884)，解压后安装 `ZGCAxZGCI printer-1.0.0-arm64.pkg`。用户 macOS 27.0 上的安装、打印菜单及真实平台刷卡取件仍需现场验证。
+GitHub 的 macOS 15 ARM64 runner 已通过测试、发布编译、架构检查、应用签名校验、PKG 打包及真实 CUPS 免驱打印验证，见 [成功构建记录](https://github.com/Episode233/roamprint-macos/actions/runs/38998616202)。可在最新成功的运行中下载 [ZGCAxZGCI printer-arm64](https://github.com/Episode233/roamprint-macos/actions/runs/38998616202/artifacts/12087942431)，解压后安装 `ZGCAxZGCI printer-1.0.0-arm64.pkg`。用户 macOS 27.0 上的安装、打印菜单及真实平台刷卡取件仍需现场验证。
 
 ## 用 GitHub 构建（本地无需开发环境）
 
@@ -56,7 +56,7 @@ open "/Applications/ZGCAxZGCI printer.app"
 没有文件时，导入区占满窗口内容区；导入文件后显示左右列表与详情。删除最后一条记录后自动恢复完整导入区。
 
 1. 连接企业内网，在 ZGCAxZGCI printer 点击“检测连接”。成功表示已取得平台令牌和存储配置，不会创建打印任务，也不代表账号及文件上传已经验证。原生网络请求不受浏览器 CORS 限制；网络不通时仍会报错。
-2. 从文档的 macOS 打印菜单选择“ZGCAxZGCI printer”，设置份数和双面等选项。Word、Excel、PPT 等由各自应用通过系统打印，不需要手动转换文件。收到后客户端会打开待提交界面。页面范围和每页多版尚需 Mac 实测；若收集服务拒绝这些选项，可先在来源应用生成已选好页面、完成排版的文档。
+2. 从文档的 macOS 打印菜单选择“ZGCAxZGCI printer”，设置份数和双面等选项。Word、Excel、PPT 等由各自应用通过系统打印，不需要手动转换文件。收到后客户端会打开待提交界面。macOS 15 的实际 CUPS 测试已验证页面范围和每页多版由系统预先排版；用户 macOS 27 上的 Word/WPS 等应用仍需确认。
 3. 也可以点击“导入文件”选择文档，或从 Finder 拖拽一个或多个文件到窗口；不限扩展名，保留原文件名和内容提交；单个文件最大 128 MB。Office、图片等原文件能否被平台处理，需要实际提交验证，客户端不自行转换。无法预先识别页数时显示“页数由平台识别”。
 4. 在 ZGCAxZGCI printer 中检查待提交文档和打印参数，输入打印账号、密码，点击“提交并等待刷卡取件”。修改的参数会随提交一起保存，无需单独保存。默认勾选“记住登录信息”：成功提交后将账号密码存入当前用户的 macOS 钥匙串，下次启动自动填写。
 5. 作业状态变为“已提交，请刷卡取件”后，到打印机刷卡释放。系统队列完成只表示文档已经进入本地待提交列表。

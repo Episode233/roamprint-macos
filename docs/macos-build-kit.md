@@ -17,7 +17,7 @@
 
 ## 在 GitHub 生成安装包
 
-现有 [roamprint-macos 仓库](https://github.com/Episode233/roamprint-macos) 已成功构建，可在最新成功的运行中下载 [ZGCAxZGCI printer-arm64](https://github.com/Episode233/roamprint-macos/actions/runs/38873731293/artifacts/12034147884)，或进入 Actions 重新运行。下载需登录 GitHub，产物保留 30 天。现有仓库直接维护展开的源码，无需上传本构建包。
+现有 [roamprint-macos 仓库](https://github.com/Episode233/roamprint-macos) 已成功构建，可在最新成功的运行中下载 [ZGCAxZGCI printer-arm64](https://github.com/Episode233/roamprint-macos/actions/runs/38998616202/artifacts/12087942431)，或进入 Actions 重新运行。下载需登录 GitHub，产物保留 30 天。现有仓库直接维护展开的源码，无需上传本构建包。
 
 以下步骤用于将构建包上传到另一个仓库：
 
@@ -41,7 +41,7 @@
 ## 安装后怎么用
 
 1. 连接企业内网，打开 ZGCAxZGCI printer，点击“检测连接”。默认地址已设置为 `http://10.1.8.5/xzentprint/services`。
-2. 点击“添加到打印菜单”，在弹出的终端窗口按提示输入 Mac 管理员密码。这一步只需设置一次，随后可在打印菜单中选择“ZGCAxZGCI printer”，名称按用户指定设置。
+2. 点击“添加到打印菜单”，在弹出的终端窗口按提示输入 Mac 管理员密码。随后可在打印菜单中选择“ZGCAxZGCI printer”。从旧驱动版本升级时也需再点击一次，将已有队列原位更新为免驱 IPP；成功时显示“免驱 IPP”。
 3. 在 Word、Excel、PPT 等应用中使用系统打印菜单，或者在 ZGCAxZGCI printer 中点击“导入文件”、将 Finder 文件拖到窗口。直接导入不限扩展名，保留原文件提交；具体格式是否能处理取决于平台。单个文件最大 128 MB。
 4. 检查打印参数，输入打印账号密码，点击“提交并等待刷卡取件”。默认勾选“记住登录信息”，成功提交后保存到 macOS 钥匙串，下次自动填写。
 5. 显示“已提交，请刷卡取件”后，去打印机刷卡取件。
@@ -52,6 +52,6 @@
 
 ## 当前验证状态
 
-Linux 41 项核心测试已通过。2026-10-16 的 [GitHub macOS 15 ARM64 构建](https://github.com/Episode233/roamprint-macos/actions/runs/38873731293) 也已通过完整测试（含真实钥匙串测试）、发布编译、架构检查、应用签名校验、PKG 打包及产物上传。用户 macOS 27.0 上的安装、打印菜单和内网刷卡取件仍需实测。此构建包提供源码和配置，实际 `.pkg` 可从上述成功构建下载。
+Linux 42 项核心测试已通过。2026-10-17 的 [GitHub macOS 15 ARM64 构建](https://github.com/Episode233/roamprint-macos/actions/runs/38998616202) 也已通过完整测试（含真实钥匙串测试）、发布编译、架构检查、应用签名校验、PKG 打包及产物上传。真实 CUPS 测试还验证了免驱队列、打印参数、选页、每页多版和旧队列迁移。用户 macOS 27.0 上的新版免驱接入和内网刷卡取件仍需实测。此构建包提供源码和配置，实际 `.pkg` 可从上述成功构建下载。
 
 默认应用使用 ad-hoc 签名，安装包未做 Apple 公证。若 macOS 拦截已确认来源的下载文件，可在“系统设置 → 隐私与安全性”中选择“仍要打开”。无需全局关闭系统安全设置。
