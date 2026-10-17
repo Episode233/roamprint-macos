@@ -68,11 +68,16 @@ def captured(root, title, process, expected):
     raise RuntimeError(f"No local capture for {title}")
 
 
-def driverless(queue):
+def driverless(queue, initialize=False):
     output = run("sudo", "-n", "/usr/sbin/lpadmin", "-p", queue, "-E",
                  "-D", "ZGCAxZGCI printer", "-L", "Local capture test",
                  "-v", URI, "-m", "everywhere", "-o", "printer-is-shared=false")
     assert "deprecated" not in output.lower(), output
+    if initialize:
+        # Match first-install defaults in install-local-printer.sh. CUPS can
+        # choose ColorModel=RGB while generating its internal configuration.
+        run("/usr/bin/lpoptions", "-p", queue, "-o", "media=iso_a4_210x297mm",
+            "-o", "print-color-mode=monochrome", "-o", "sides=one-sided")
     options = run("/usr/bin/lpoptions", "-p", queue, "-l")
     for option in ["A4", "A3", "A5", "Letter", "Legal", "Gray", "RGB", "DuplexNoTumble", "DuplexTumble"]:
         assert option in options, f"Missing driverless capability: {option}"
@@ -105,7 +110,7 @@ def main():
                     raise RuntimeError("Service did not start")
 
                 fresh, legacy = queues
-                driverless(fresh)
+                driverless(fresh, initialize=True)
                 cases = [
                     ("default", [], {"pages": 2, "copies": 1, "color": 1, "duplex": 1, "paperName": "A4"}),
                     ("settings", ["-n", "3", "-o", "media=iso_a3_297x420mm", "-o", "print-color-mode=color",
