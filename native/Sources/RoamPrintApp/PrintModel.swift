@@ -17,7 +17,6 @@ final class PrintModel: ObservableObject {
     @Published var diagnostic: String?
     @Published private(set) var configuration: ServerConfiguration?
     private var queue: JobQueue?
-    private var refreshTask: Task<Void, Never>?
     private let defaults: UserDefaults
     private let rememberedLogin: RememberedLogin
 
@@ -50,7 +49,7 @@ final class PrintModel: ObservableObject {
         } catch { alert = error.localizedDescription }
         restoreLogin()
         guard refreshAutomatically else { return }
-        refreshTask = Task { [weak self] in
+        Task { [weak self] in
             guard let self else { return }
             do { try await self.queue?.recoverInterrupted() } catch { self.alert = error.localizedDescription }
             while !Task.isCancelled {
