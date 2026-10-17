@@ -7,12 +7,14 @@ on:
       - '.github/workflows/macos.yml'
       - 'native/**'
       - 'scripts/**'
+      - 'tools/**'
       - 'RoamPrint-source.zip'
   pull_request:
     paths:
       - '.github/workflows/macos.yml'
       - 'native/**'
       - 'scripts/**'
+      - 'tools/**'
       - 'RoamPrint-source.zip'
 
 permissions:
@@ -75,6 +77,11 @@ jobs:
           /usr/bin/security default-keychain -d user -s "$test_keychain"
           mkdir -p dist
           bash "$ROAMPRINT_PROJECT_DIR/scripts/build-macos.sh" 2>&1 | tee dist/build.log
+
+      - name: Verify driverless printing and legacy queue migration
+        run: |
+          python3 -u "$ROAMPRINT_PROJECT_DIR/tools/test-driverless-macos.py" \
+            "dist/ZGCAxZGCI printer.app" 2>&1 | tee -a dist/build.log
 
       - name: Report build failure details
         if: failure()

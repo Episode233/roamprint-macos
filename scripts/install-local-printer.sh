@@ -8,8 +8,7 @@ script_dir=$(cd "$(dirname "$0")" && pwd)
 app_path=${1:-"/Applications/ZGCAxZGCI printer.app"}
 if [[ "$script_dir" == */Contents/Resources ]]; then app_path=${1:-${script_dir%/Contents/Resources}}; fi
 service_path="$app_path/Contents/Resources/bin/roamprint-service"
-ppd_path="$app_path/Contents/Resources/RoamPrint.ppd"
-if [[ ! -x "$service_path" || ! -f "$ppd_path" ]]; then
+if [[ ! -x "$service_path" ]]; then
     echo "找不到完整的 ZGCAxZGCI printer.app：$app_path" >&2
     exit 1
 fi
@@ -103,11 +102,13 @@ if [[ "$printer_exists" != true ]]; then
     # Mark before invoking lpadmin, so a partially created queue is also rolled back.
     printer_created=true
 fi
-# Update existing queues too, so upgrades apply the display and model names.
+# Discover capabilities over IPP. Update legacy queues in place, preserving jobs;
+# do not supply a custom PPD (-P), which CUPS has deprecated.
 /usr/bin/sudo /usr/sbin/lpadmin -p ZGCAxZGCIprinter -E \
     -D "ZGCAxZGCI printer" -L "提交到平台后刷卡取件" \
-    -v ipp://127.0.0.1:19963/ipp/print -P "$ppd_path" -o printer-is-shared=false
+    -v ipp://127.0.0.1:19963/ipp/print -m everywhere -o printer-is-shared=false
 if [[ "$printer_exists" != true ]]; then
-    /usr/bin/lpoptions -p ZGCAxZGCIprinter -o media=A4 -o ColorModel=Gray -o Duplex=None
+    /usr/bin/lpoptions -p ZGCAxZGCIprinter -o media=iso_a4_210x297mm \
+        -o print-color-mode=monochrome -o sides=one-sided
 fi
-echo "已启用“ZGCAxZGCI printer”。从系统打印菜单发送后，在 ZGCAxZGCI printer 中确认并提交。"
+echo "已启用“ZGCAxZGCI printer”（免驱 IPP）。从系统打印菜单发送后，在 ZGCAxZGCI printer 中确认并提交。"

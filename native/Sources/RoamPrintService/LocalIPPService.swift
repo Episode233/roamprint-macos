@@ -12,10 +12,10 @@ final class LocalIPPService {
     private let handler: IPPHandler
     private var connections: [UUID: IPPConnection] = [:]
 
-    init() throws {
-        let support = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask,
+    init(testJobRoot: URL? = nil) throws {
+        let support = try testJobRoot ?? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask,
                                                  appropriateFor: nil, create: true)
-        let jobs = try JobQueue(root: support.appendingPathComponent("RoamPrint/jobs", isDirectory: true))
+        let jobs = try JobQueue(root: testJobRoot ?? support.appendingPathComponent("RoamPrint/jobs", isDirectory: true))
         handler = IPPHandler { data, title, settings in
             guard let document = PDFDocument(data: data), !document.isLocked, document.pageCount > 0 else {
                 throw PrintError.invalidDocument("PDF 无法读取、已加密或没有可打印页面。")
@@ -49,7 +49,7 @@ final class LocalIPPService {
             let app = URL(fileURLWithPath: CommandLine.arguments[0]).resolvingSymlinksInPath()
                 .deletingLastPathComponent().deletingLastPathComponent()
                 .deletingLastPathComponent().deletingLastPathComponent()
-            if app.pathExtension == "app" {
+            if testJobRoot == nil, app.pathExtension == "app" {
                 DispatchQueue.main.async {
                     let configuration = NSWorkspace.OpenConfiguration()
                     configuration.activates = true
@@ -79,8 +79,8 @@ final class LocalIPPService {
             }
         }
     }
-    static func run() throws {
-        let service = try LocalIPPService()
+    static func run(testJobRoot: URL? = nil) throws {
+        let service = try LocalIPPService(testJobRoot: testJobRoot)
         service.listener.start(queue: service.queue)
         withExtendedLifetime(service) { dispatchMain() }
     }

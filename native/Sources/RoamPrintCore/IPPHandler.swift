@@ -232,6 +232,8 @@ public actor IPPHandler {
             .text("printer-name", "ZGCAxZGCI printer", tag: 0x42),
             .text("printer-info", "ZGCAxZGCI printer", tag: 0x41),
             .text("printer-make-and-model", "ZGCAxZGCI printer", tag: 0x41),
+            .text("printer-location", "Submit in the app, then release by card", tag: 0x41),
+            .text("printer-uuid", "urn:uuid:9cf94258-91cc-4d48-87d8-e68293124fd0", tag: 0x45),
             .integer("printer-state", 3, tag: 0x23), .text("printer-state-reasons", "none"),
             .boolean("printer-is-accepting-jobs", true), .integer("queued-job-count", jobs.values.filter { $0.state == 3 || $0.state == 5 }.count),
             .integer("printer-up-time", Int(Date().timeIntervalSince(start))),
@@ -239,7 +241,8 @@ public actor IPPHandler {
             .text("natural-language-configured", "en", tag: 0x48), .text("generated-natural-language-supported", "en", tag: 0x48),
             .text("document-format-default", "application/pdf", tag: 0x49),
             .text("document-format-supported", "application/pdf", tag: 0x49),
-            .text("document-format-supported", "application/vnd.cups-pdf", tag: 0x49),
+            // Advertising vnd.cups-pdf makes macOS treat us as a remote CUPS
+            // scheduler and skip local PDF layout. We only receive final PDF.
             .text("compression-supported", "none"), .boolean("color-supported", true),
             .integer("copies-default", 1),
             .integer("orientation-requested-default", 3, tag: 0x23),
@@ -247,7 +250,13 @@ public actor IPPHandler {
             .text("sides-default", "one-sided"), .text("print-color-mode-default", "monochrome"),
             .text("multiple-document-handling-default", "separate-documents-collated-copies"),
             .text("sheet-collate-default", "collated"),
-            .boolean("multiple-document-jobs-supported", false)
+            .boolean("multiple-document-jobs-supported", false),
+            .boolean("page-ranges-supported", false), .integer("number-up-supported", 1),
+            .integer("number-up-default", 1),
+            .resolution("printer-resolution-default", dpi: 300),
+            .resolution("printer-resolution-supported", dpi: 300),
+            .integer("print-quality-default", 4, tag: 0x23),
+            .integer("print-quality-supported", 4, tag: 0x23)
         ]
         var range = Data(); range.appendUInt32(1); range.appendUInt32(999)
         result.append(IPPAttribute(group: 4, tag: 0x33, name: "copies-supported", value: range))
@@ -255,8 +264,33 @@ public actor IPPHandler {
         result.append(IPPAttribute(group: 4, tag: 0x33, name: "job-k-octets-supported", value: sizeRange))
         for version in ["1.0", "1.1", "2.0"] { result.append(.text("ipp-versions-supported", version)) }
         for op in [2, 4, 5, 6, 8, 9, 10, 11] { result.append(.integer("operations-supported", op, tag: 0x23)) }
-        for media in ["iso_a4_210x297mm", "iso_a3_297x420mm", "iso_a5_148x210mm", "na_letter_8.5x11in", "na_legal_8.5x14in"] {
-            result.append(.text("media-supported", media))
+        let papers = [("iso_a4_210x297mm", 21000, 29700), ("iso_a3_297x420mm", 29700, 42000),
+                      ("iso_a5_148x210mm", 14800, 21000), ("na_letter_8.5x11in", 21590, 27940),
+                      ("na_legal_8.5x14in", 21590, 35560)]
+        for paper in papers { result.append(.text("media-supported", paper.0)) }
+        for paper in papers { result.append(.text("media-ready", paper.0)) }
+        let margins = ["media-bottom-margin", "media-left-margin", "media-right-margin", "media-top-margin"]
+        for member in ["media-size"] + margins { result.append(.text("media-col-supported", member)) }
+        // This is a virtual PDF destination: physical printer margins are applied
+        // by the enterprise platform, not by the local capture service.
+        for margin in margins { result.append(.integer(margin + "-supported", 0)) }
+        for paper in papers {
+            result += IPPAttribute.collection("media-size-supported", members: [
+                [.integer("x-dimension", paper.1)], [.integer("y-dimension", paper.2)]
+            ])
+        }
+        for attribute in ["media-col-database", "media-col-ready", "media-col-default"] {
+            for paper in (attribute == "media-col-default" ? Array(papers.prefix(1)) : papers) {
+                let size = IPPAttribute.collection("media-size", members: [
+                    [.integer("x-dimension", paper.1)], [.integer("y-dimension", paper.2)]
+                ])
+                result += IPPAttribute.collection(attribute, members: [size] + margins.map { [.integer($0, 0)] })
+            }
+        }
+        for attribute in ["copies", "document-format", "job-name", "media", "media-col", "sides",
+                          "print-color-mode", "multiple-document-handling", "orientation-requested",
+                          "printer-resolution", "print-quality"] {
+            result.append(.text("job-creation-attributes-supported", attribute))
         }
         for side in ["one-sided", "two-sided-long-edge", "two-sided-short-edge"] { result.append(.text("sides-supported", side)) }
         for color in ["monochrome", "color"] { result.append(.text("print-color-mode-supported", color)) }

@@ -45,9 +45,9 @@ bash "/Applications/ZGCAxZGCI printer.app/Contents/Resources/install-local-print
 open "/Applications/ZGCAxZGCI printer.app"
 ```
 
-脚本将用户 LaunchAgent 写入 `~/Library/LaunchAgents/org.local.roamprint.capture.plist`，并通过管理员授权的 `lpadmin` 添加“ZGCAxZGCI printer”，显示名称为 `ZGCAxZGCI printer`。CUPS 不允许内部队列标识包含空格，因此内部标识继续使用 `ZGCAxZGCIprinter`；重新运行安装会更新已有队列的显示名称和 PPD。服务只监听 `127.0.0.1:19963`；队列地址为 `ipp://127.0.0.1:19963/ipp/print`。不会写入 `/usr/libexec/cups/backend` 等受保护目录。
+脚本将用户 LaunchAgent 写入 `~/Library/LaunchAgents/org.local.roamprint.capture.plist`，并通过管理员授权的 `lpadmin -m everywhere` 添加“ZGCAxZGCI printer”。CUPS 不允许内部队列标识包含空格，因此内部标识继续使用 `ZGCAxZGCIprinter`。服务只监听 `127.0.0.1:19963`；队列地址为 `ipp://127.0.0.1:19963/ipp/print`。不会写入 `/usr/libexec/cups/backend` 等受保护目录。
 
-如果 `lpadmin` 提示“打印机驱动程序已弃用”，这是 CUPS 对 PPD 驱动方式的弃用提醒。当前添加成功即可继续测试使用；将来若系统升级到移除 PPD 支持的 CUPS 版本，需要迁移打印接入方式。当前仍使用已安装成功的 PPD 方案。
+当前使用免驱 IPP：macOS 从本地服务读取纸张、颜色和双面等能力，应用不再附带自定义 PPD，也不再用 `-P` 安装驱动。旧版升级后须再点一次“添加到打印菜单”，原位更新已有队列，保留队列标识和待处理任务。成功时显示“免驱 IPP”。这解决了旧安装方式的驱动弃用提示；未来 macOS 的兼容性仍需随系统更新验证。当前 CUPS 可能在内部生成配置文件，这是系统的实现细节。
 
 本版本按单个登录用户设计。同一台 Mac 的快速用户切换、多用户同时登录尚未支持；这些场景不要启用此队列，以免作业进入另一用户的本地服务。企业平台访问需要连接相应内网，macOS 出现本地网络访问提示时，需要允许应用连接打印平台。
 

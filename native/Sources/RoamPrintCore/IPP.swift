@@ -18,6 +18,21 @@ public struct IPPAttribute: Equatable, Sendable {
     public static func boolean(_ name: String, _ value: Bool, group: UInt8 = 4) -> Self {
         Self(group: group, tag: 0x22, name: name, value: Data([value ? 1 : 0]))
     }
+    /// RFC 8010 collections use memberAttrName values and zero-length wire names.
+    /// A member can itself be a collection; flattening retains the nested delimiters.
+    public static func collection(_ name: String, members: [[Self]], group: UInt8 = 4) -> [Self] {
+        var result = [Self(group: group, tag: 0x34, name: name, value: Data())]
+        for member in members where !member.isEmpty {
+            result.append(.text(name, member[0].name, tag: 0x4a, group: group))
+            result += member.map { Self(group: group, tag: $0.tag, name: name, value: $0.value) }
+        }
+        result.append(Self(group: group, tag: 0x37, name: name, value: Data()))
+        return result
+    }
+    public static func resolution(_ name: String, dpi: Int, group: UInt8 = 4) -> Self {
+        var bytes = Data(); bytes.appendUInt32(UInt32(dpi)); bytes.appendUInt32(UInt32(dpi)); bytes.append(3)
+        return Self(group: group, tag: 0x32, name: name, value: bytes)
+    }
     public var string: String? { String(data: value, encoding: .utf8) }
     public var integer: Int? {
         guard value.count == 4 else { return nil }

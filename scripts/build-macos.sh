@@ -28,7 +28,6 @@ fi
 mkdir -p "$app_path/Contents/MacOS" "$app_path/Contents/Resources/bin"
 /usr/bin/install -m 755 "$binary_dir/RoamPrint" "$app_path/Contents/MacOS/ZGCAxZGCI printer"
 /usr/bin/install -m 755 "$binary_dir/roamprint-service" "$app_path/Contents/Resources/bin/roamprint-service"
-/usr/bin/install -m 644 "$repo_dir/native/Resources/RoamPrint.ppd" "$app_path/Contents/Resources/RoamPrint.ppd"
 /usr/bin/install -m 755 "$repo_dir/scripts/install-local-printer.sh" "$app_path/Contents/Resources/install-local-printer.sh"
 /usr/bin/install -m 755 "$repo_dir/scripts/add-to-print-menu.command" "$app_path/Contents/Resources/add-to-print-menu.command"
 /usr/bin/install -m 755 "$repo_dir/scripts/remove-local-printer.sh" "$app_path/Contents/Resources/remove-local-printer.sh"

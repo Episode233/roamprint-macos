@@ -129,5 +129,44 @@ final class IPPTests: XCTestCase {
         XCTAssertEqual(decoded.value("printer-uri-supported")?.string, IPPHandler.printerURI)
         XCTAssertEqual(decoded.value("document-format-default")?.string, "application/pdf")
         XCTAssertEqual(decoded.value("copies-supported")?.value, Data([0,0,0,1,0,0,3,231]))
+        // The vendor format tells Apple's CUPS to bypass local PDF layout.
+        XCTAssertEqual(decoded.attributes.filter { $0.name == "document-format-supported" }.compactMap(\.string), ["application/pdf"])
+        XCTAssertEqual(decoded.value("printer-resolution-supported")?.value, Data([0,0,1,44,0,0,1,44,3]))
+        let collection = decoded.attributes.filter { $0.name == "media-col-database" }
+        XCTAssertEqual(collection.filter { $0.tag == 0x34 }.count, 10) // five papers, each with nested size
+        XCTAssertEqual(collection.filter { $0.tag == 0x37 }.count, 10)
+        // Validate that every advertised media collection is understood on submission.
+        var current: [IPPAttribute] = [], depth = 0, papers: [String] = []
+        let captures = Captures()
+        let receiver = IPPHandler { data, title, settings in await captures.add(data, title, settings) }
+        for attribute in collection {
+            current.append(IPPAttribute(group: 2, tag: attribute.tag, name: "media-col", value: attribute.value))
+            if attribute.tag == 0x34 { depth += 1 }
+            if attribute.tag == 0x37 { depth -= 1 }
+            if depth == 0 {
+                let response = await receiver.handle(request(2, current, document: Data("%PDF-fixture".utf8)))
+                XCTAssertEqual(response.code, 0)
+                if let settings = await captures.lastSettings() { papers.append(settings.paperName) }
+                current = []
+            }
+        }
+        XCTAssertEqual(papers, ["A4", "A3", "A5", "Letter", "Legal"])
+    }
+    func testCollectionUsesRFC8010WireNamesAndDelimiters() throws {
+        let attributes = IPPAttribute.collection("a", members: [
+            IPPAttribute.collection("b", members: [[.integer("c", 1)]])
+        ])
+        let wire = try IPPMessage(code: 0, requestID: 1, attributes: attributes).encoded()
+        // Independent wire fixture: only the outer attribute has a name;
+        // nested member names are values of memberAttrName (0x4a).
+        XCTAssertEqual(wire, Data([
+            2,0,0,0,0,0,0,1, 4,
+            0x34,0,1,0x61,0,0,
+            0x4a,0,0,0,1,0x62,
+            0x34,0,0,0,0,
+            0x4a,0,0,0,1,0x63,
+            0x21,0,0,0,4,0,0,0,1,
+            0x37,0,0,0,0, 0x37,0,0,0,0, 3
+        ]))
     }
 }
