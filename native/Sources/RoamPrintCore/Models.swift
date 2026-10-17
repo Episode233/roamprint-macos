@@ -1,45 +1,33 @@
 import Foundation
 
-public enum PlatformGeneration: String, Codable, CaseIterable, Sendable {
-    case v5, v6
-}
-
-public struct ServerConfiguration: Codable, Equatable, Sendable {
+public struct ServerConfiguration: Equatable, Sendable {
     public var baseURL: URL
-    public var generation: PlatformGeneration
-    public init(baseURL: URL, generation: PlatformGeneration) throws {
+    public init(baseURL: URL) throws {
         guard ["http", "https"].contains(baseURL.scheme?.lowercased() ?? ""),
               baseURL.host != nil, baseURL.user == nil, baseURL.password == nil,
               baseURL.query == nil, baseURL.fragment == nil else {
             throw PrintError.invalidConfiguration("请输入完整的 http 或 https 平台地址。")
         }
         self.baseURL = baseURL
-        self.generation = generation
     }
     public func endpoint(_ path: String) -> URL {
         baseURL.appendingPathComponent(path.trimmingCharacters(in: CharacterSet(charactersIn: "/")))
     }
 }
 
-public enum LoginKind: Int, Codable, CaseIterable, Sendable {
-    case platform = 0, domain = 1
-}
-
 /// Credentials never appear in a job journal; the UI can opt to save them in the OS keychain.
 public struct Credentials: Sendable {
     public let username: String
     public let password: String
-    public let kind: LoginKind
-    public init(username: String, password: String, kind: LoginKind = .platform) {
+    public init(username: String, password: String) {
         self.username = username
         self.password = password
-        self.kind = kind
     }
 }
 
 public struct PrintSettings: Codable, Equatable, Sendable {
-    public enum Color: Int, Codable, CaseIterable, Sendable { case gray = 1, color = 2 }
-    public enum Duplex: Int, Codable, CaseIterable, Sendable { case single = 1, longEdge = 2, shortEdge = 3 }
+    public enum Color: Int, Codable, Sendable { case gray = 1, color = 2 }
+    public enum Duplex: Int, Codable, Sendable { case single = 1, longEdge = 2, shortEdge = 3 }
     public var copies: Int
     public var color: Color
     public var duplex: Duplex

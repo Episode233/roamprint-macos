@@ -45,7 +45,7 @@ final class LocalIPPService {
             catch { try? file.close(); throw error }
             let info = DocumentInfo(title: title, pageCount: document.pageCount, a3Pages: a3,
                                     a4Pages: a4, otherPages: other, byteCount: Int64(data.count))
-            let captured = try await jobs.add(source: path, info: info, settings: settings).id
+            _ = try await jobs.add(source: path, info: info, settings: settings)
             let app = URL(fileURLWithPath: CommandLine.arguments[0]).resolvingSymlinksInPath()
                 .deletingLastPathComponent().deletingLastPathComponent()
                 .deletingLastPathComponent().deletingLastPathComponent()
@@ -56,7 +56,6 @@ final class LocalIPPService {
                     NSWorkspace.shared.openApplication(at: app, configuration: configuration, completionHandler: nil)
                 }
             }
-            return captured
         }
         let parameters = NWParameters.tcp
         // A required loopback endpoint prevents an accidental LAN-wide listener.

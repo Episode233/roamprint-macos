@@ -137,7 +137,6 @@ public actor V5Platform {
         }
     }
     private func connect() async throws -> (token: String, storage: V5Storage, password: String) {
-        guard configuration.generation == .v5 else { throw PrintError.invalidConfiguration("当前版本支持 V5 打印平台。") }
         let auth = try await post("getToken", ["type": 0, "client_id": "PrintSys",
             "client_secret": "5XQ+FS71Y0qUILpOcX/y3jEZ7ExHswblLWJ6IwoUv68=",
             "signature": V5Wire.signature("type=0")])
@@ -163,9 +162,6 @@ public actor V5Platform {
     }
     public func submit(job supplied: PrintJob, credentials: Credentials, queue: JobQueue) async throws {
         guard !busy else { throw PrintError.queue("另一个作业正在提交。") }
-        guard configuration.generation == .v5, credentials.kind == .platform else {
-            throw PrintError.invalidConfiguration("当前版本支持 V5 平台账号登录。")
-        }
         guard !credentials.username.isEmpty, !credentials.password.isEmpty else {
             throw PrintError.invalidConfiguration("请输入打印账号和密码。")
         }

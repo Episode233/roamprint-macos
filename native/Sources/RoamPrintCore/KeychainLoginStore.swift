@@ -10,7 +10,6 @@ public struct KeychainLoginStore: LoginCredentialStoring {
     private struct Record: Codable {
         let username: String
         let password: String
-        let kind: LoginKind
     }
 
     private func query(_ platform: String) -> [String: Any] {
@@ -30,12 +29,12 @@ public struct KeychainLoginStore: LoginCredentialStoring {
         guard let data = item as? Data, let record = try? JSONDecoder().decode(Record.self, from: data) else {
             throw PrintError.invalidConfiguration("已保存的登录信息无法读取，请清除后重新输入。")
         }
-        return Credentials(username: record.username, password: record.password, kind: record.kind)
+        return Credentials(username: record.username, password: record.password)
     }
 
     public func save(_ credentials: Credentials, for platform: String) throws {
         let data = try JSONEncoder().encode(Record(username: credentials.username,
-            password: credentials.password, kind: credentials.kind))
+            password: credentials.password))
         let attributes: [String: Any] = [kSecValueData as String: data,
                                        kSecAttrLabel as String: "ZGCAxZGCI printer 登录信息"]
         let request = query(platform)

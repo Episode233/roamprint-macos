@@ -4,8 +4,8 @@ import XCTest
 final class IPPTests: XCTestCase {
     private actor Captures {
         var values: [(Data, String, PrintSettings)] = []
-        func add(_ data: Data, _ title: String, _ settings: PrintSettings) -> UUID {
-            values.append((data, title, settings)); return UUID()
+        func add(_ data: Data, _ title: String, _ settings: PrintSettings) {
+            values.append((data, title, settings))
         }
         func count() -> Int { values.count }
         func lastSettings() -> PrintSettings? { values.last?.2 }
@@ -122,7 +122,7 @@ final class IPPTests: XCTestCase {
         XCTAssertEqual(count, 2)
     }
     func testPrinterAdvertisesPDFAndCaptureOnlyOperations() async throws {
-        let handler = IPPHandler { _, _, _ in XCTFail("query must not capture"); return UUID() }
+        let handler = IPPHandler { _, _, _ in XCTFail("query must not capture") }
         let result = await handler.handle(request(11))
         let decoded = try IPPMessage(data: result.encoded())
         XCTAssertEqual(decoded.code, 0)

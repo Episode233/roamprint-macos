@@ -1,5 +1,8 @@
 import XCTest
 @testable import RoamPrintCore
+#if os(macOS)
+import Security
+#endif
 
 private final class MemoryCredentialStore: LoginCredentialStoring {
     var values: [String: Credentials] = [:]
@@ -86,10 +89,21 @@ final class RememberedLoginTests: XCTestCase {
     #if os(macOS)
     func testActualKeychainCreateReadUpdateAndDelete() throws {
         // Unique service prevents reading or changing a real RoamPrint login.
-        let store = KeychainLoginStore(service: "org.local.roamprint.tests." + UUID().uuidString)
+        let service = "org.local.roamprint.tests." + UUID().uuidString
+        let store = KeychainLoginStore(service: service)
         let key = RememberedLogin.platformKey(server)
         defer { try? store.delete(for: key) }
         XCTAssertNil(try store.read(for: key))
+        // Removing the unused login-kind field must preserve already saved logins.
+        let saved = try JSONSerialization.data(withJSONObject: [
+            "username": credentials.username, "password": credentials.password, "kind": 0
+        ])
+        let item: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+                                  kSecAttrService as String: service, kSecAttrAccount as String: key,
+                                  kSecValueData as String: saved]
+        XCTAssertEqual(SecItemAdd(item as CFDictionary, nil), errSecSuccess)
+        XCTAssertEqual(try store.read(for: key)?.username, credentials.username)
+        XCTAssertEqual(try store.read(for: key)?.password, credentials.password)
         try store.save(credentials, for: key)
         XCTAssertEqual(try store.read(for: key)?.password, credentials.password)
         let replacement = Credentials(username: "新账号", password: "quote\"slash\\新密码")

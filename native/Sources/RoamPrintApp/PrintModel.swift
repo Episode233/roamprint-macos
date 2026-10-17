@@ -72,7 +72,7 @@ final class PrintModel: ObservableObject {
         if parts.last?.lowercased() != "services" { parts.append("services") }
         components.path = "/" + parts.joined(separator: "/")
         guard let url = components.url else { throw PrintError.invalidConfiguration("请输入有效的平台地址。") }
-        return try ServerConfiguration(baseURL: url, generation: .v5)
+        return try ServerConfiguration(baseURL: url)
     }
 
     func saveConfiguration(_ address: String) {

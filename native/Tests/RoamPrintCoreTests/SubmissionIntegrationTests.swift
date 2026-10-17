@@ -13,7 +13,7 @@ final class SubmissionIntegrationTests: XCTestCase {
         ]
         let server = try LoopbackHTTPServer(statuses: [200, 200],
             responseBodies: try replies.map { try JSONSerialization.data(withJSONObject: $0) }, done: done)
-        let configuration = try ServerConfiguration(baseURL: URL(string: "http://127.0.0.1:\(server.port)/xzentprint/services")!, generation: .v5)
+        let configuration = try ServerConfiguration(baseURL: URL(string: "http://127.0.0.1:\(server.port)/xzentprint/services")!)
         server.start()
         let result = try await V5Platform(configuration: configuration).checkConnection()
         await fulfillment(of: [done], timeout: 10)
@@ -56,7 +56,7 @@ final class SubmissionIntegrationTests: XCTestCase {
             info: DocumentInfo(title: "集成测试", pageCount: 3, byteCount: Int64(bytes.count)),
             settings: PrintSettings(copies: 2, color: .color, duplex: .shortEdge, collate: false, landscape: true))
         let configuration = try ServerConfiguration(
-            baseURL: URL(string: "http://127.0.0.1:\(apiServer.port)/xzentprint/services")!, generation: .v5)
+            baseURL: URL(string: "http://127.0.0.1:\(apiServer.port)/xzentprint/services")!)
         let client = V5Platform(configuration: configuration,
             identity: ClientIdentity(ip: "127.0.0.1", mac: "00:11:22:33:44:55", host: "integration-mac"))
         let credentials = Credentials(username: "integration-user", password: "fixture-password")

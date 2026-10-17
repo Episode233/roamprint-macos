@@ -32,10 +32,6 @@ private actor PlatformHTTP: HTTPTransport {
         }
         return HTTPResponse(status: 200, body: try JSONSerialization.data(withJSONObject: json))
     }
-    func upload(_ request: URLRequest, file: URL) async throws -> HTTPResponse {
-        XCTFail("Storage must use uploader, not enterprise POST transport")
-        throw PrintError.transport("Unexpected upload")
-    }
     func names() -> [String] { requests.map { $0.url!.lastPathComponent } }
     func request(_ index: Int) -> URLRequest { requests[index] }
 }
@@ -62,7 +58,7 @@ final class V5PlatformTests: XCTestCase {
         return (root, queue, job)
     }
     private func platform(_ http: PlatformHTTP, _ uploader: StorageRecorder) throws -> V5Platform {
-        V5Platform(configuration: try ServerConfiguration(baseURL: URL(string: "http://10.1.8.5/xzentprint/services")!, generation: .v5),
+        V5Platform(configuration: try ServerConfiguration(baseURL: URL(string: "http://10.1.8.5/xzentprint/services")!),
             transport: http, uploader: uploader, identity: ClientIdentity(ip: "10.1.8.20", mac: "aa:bb:cc:dd:ee:ff", host: "fixture-mac"))
     }
     func testSuccessfulSubmissionPreservesCardReleaseAndPrivateSource() async throws {

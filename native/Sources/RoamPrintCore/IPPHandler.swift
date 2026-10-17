@@ -2,13 +2,12 @@ import Foundation
 
 /// Captures into a local queue only. It has no enterprise transport or credentials.
 public actor IPPHandler {
-    public typealias Capture = @Sendable (Data, String, PrintSettings) async throws -> UUID
+    public typealias Capture = @Sendable (Data, String, PrintSettings) async throws -> Void
     public static let printerURI = "ipp://127.0.0.1:19963/ipp/print"
     private struct LocalJob {
         var title: String
         var settings: PrintSettings
         var state: Int = 3
-        var captured: UUID?
         let created = Date()
     }
     private let capture: Capture
@@ -97,8 +96,8 @@ public actor IPPHandler {
         }
         job.state = 5; jobs[id] = job
         do {
-            let captured = try await capture(request.document, job.title, job.settings)
-            job.captured = captured; job.state = 9; jobs[id] = job
+            try await capture(request.document, job.title, job.settings)
+            job.state = 9; jobs[id] = job
             return .response(to: request, attributes: jobAttributes(id))
         } catch {
             job.state = 8; jobs[id] = job
