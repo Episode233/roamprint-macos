@@ -12,7 +12,6 @@ import time
 import uuid
 
 URI = "ipp://127.0.0.1:19963/ipp/print"
-ROOT = Path(__file__).resolve().parent.parent
 
 
 def run(*args, check=True):
@@ -68,16 +67,14 @@ def captured(root, title, process, expected):
     raise RuntimeError(f"No local capture for {title}")
 
 
-def driverless(queue, initialize=False):
+def driverless(queue):
     output = run("sudo", "-n", "/usr/sbin/lpadmin", "-p", queue, "-E",
                  "-D", "ZGCAxZGCI printer", "-L", "Local capture test",
                  "-v", URI, "-m", "everywhere", "-o", "printer-is-shared=false")
     assert "deprecated" not in output.lower(), output
-    if initialize:
-        # Match first-install defaults in install-local-printer.sh. CUPS can
-        # choose ColorModel=RGB while generating its internal configuration.
-        run("/usr/bin/lpoptions", "-p", queue, "-o", "media=iso_a4_210x297mm",
-            "-o", "print-color-mode=monochrome", "-o", "sides=one-sided")
+    # Match first-install defaults in install-local-printer.sh.
+    run("/usr/bin/lpoptions", "-p", queue, "-o", "media=iso_a4_210x297mm",
+        "-o", "print-color-mode=monochrome", "-o", "sides=one-sided")
     options = run("/usr/bin/lpoptions", "-p", queue, "-l")
     for option in ["A4", "A3", "A5", "Letter", "Legal", "Gray", "RGB", "DuplexNoTumble", "DuplexTumble"]:
         assert option in options, f"Missing driverless capability: {option}"
@@ -86,9 +83,9 @@ def driverless(queue, initialize=False):
 def main():
     assert platform.system() == "Darwin" and os.geteuid() != 0
     app = Path(sys.argv[1]).resolve()
-    assert not (app / "Contents/Resources/RoamPrint.ppd").exists(), "App still bundles a PPD"
+    assert not list(app.rglob("*.ppd")), "App must not bundle PPD files"
     service = app / "Contents/Resources/bin/roamprint-service"
-    queues = ["RoamPrintTest_" + uuid.uuid4().hex[:12] for _ in range(2)]
+    queue = "RoamPrintTest_" + uuid.uuid4().hex[:12]
     with tempfile.TemporaryDirectory(prefix="roamprint-ipp-") as temp:
         temp = Path(temp)
         job_root = temp / "jobs"
@@ -109,39 +106,30 @@ def main():
                 else:
                     raise RuntimeError("Service did not start")
 
-                fresh, legacy = queues
-                driverless(fresh, initialize=True)
+                driverless(queue)
                 cases = [
                     ("default", [], {"pages": 2, "copies": 1, "color": 1, "duplex": 1, "paperName": "A4"}),
                     ("settings", ["-n", "3", "-o", "media=iso_a3_297x420mm", "-o", "print-color-mode=color",
                                   "-o", "sides=two-sided-long-edge"],
-                     {"pages": 2, "copies": 3, "color": 2, "duplex": 2, "paperName": "A3"}),
+                     {"pages": 2, "copies": 3, "color": 2, "duplex": 2, "paperName": "A3", "collate": True}),
+                    ("uncollated", ["-n", "2", "-o", "sides=two-sided-short-edge", "-o",
+                                    "multiple-document-handling=separate-documents-uncollated-copies"],
+                     {"pages": 2, "copies": 2, "duplex": 3, "collate": False}),
                     ("page-range", ["-o", "page-ranges=2"], {"pages": 1, "copies": 1}),
                     ("two-up", ["-o", "number-up=2"], {"pages": 1, "copies": 1}),
                 ]
                 for title, options, expected in cases:
-                    run("/usr/bin/lp", "-d", fresh, "-t", title, *options, str(source))
+                    run("/usr/bin/lp", "-d", queue, "-t", title, *options, str(source))
                     captured(job_root, title, process, expected)
 
-                # A held job must survive upgrading a custom-PPD queue in place.
-                run("sudo", "-n", "/usr/sbin/lpadmin", "-p", legacy, "-E", "-v", URI,
-                    "-P", str(ROOT / "tools/fixtures/legacy-capture.ppd"), "-o", "printer-is-shared=false")
-                run("/usr/bin/lp", "-d", legacy, "-H", "hold", "-t", "migration", str(source))
-                before = run("/usr/bin/lpstat", "-o", legacy).split()[0]
-                driverless(legacy)
-                assert before in run("/usr/bin/lpstat", "-o", legacy), "Upgrade discarded a held job"
-                run("/usr/bin/lp", "-i", before, "-H", "resume")
-                captured(job_root, "migration", process, {"pages": 2, "paperName": "A4"})
-                print("PASS driverless discovery, printing, local layout and legacy migration", flush=True)
+                print("PASS driverless discovery, printing and local layout", flush=True)
             except Exception:
-                for queue in queues:
-                    run("/usr/bin/lpstat", "-l", "-p", queue, check=False)
-                    run("/usr/bin/lpstat", "-o", queue, check=False)
+                run("/usr/bin/lpstat", "-l", "-p", queue, check=False)
+                run("/usr/bin/lpstat", "-o", queue, check=False)
                 run("sudo", "-n", "/usr/bin/tail", "-n", "50", "/var/log/cups/error_log", check=False)
                 raise
             finally:
-                for queue in queues:
-                    run("sudo", "-n", "/usr/sbin/lpadmin", "-x", queue, check=False)
+                run("sudo", "-n", "/usr/sbin/lpadmin", "-x", queue, check=False)
                 process.terminate()
                 try:
                     process.wait(timeout=5)

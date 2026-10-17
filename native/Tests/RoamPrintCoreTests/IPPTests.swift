@@ -98,25 +98,25 @@ final class IPPTests: XCTestCase {
         let settings = await captures.lastSettings()
         XCTAssertEqual(settings?.paperName, "Letter")
     }
-    func testApplePresetDirectionAndCollationReachEnterpriseFields() async throws {
+    func testStandardDirectionAndCollationReachEnterpriseFields() async throws {
         let captures = Captures()
         let handler = IPPHandler { data, title, settings in await captures.add(data, title, settings) }
-        for (orientation, collate) in [(1, false), (2, true)] {
+        for (orientation, collate) in [(3, false), (4, true)] {
             let response = await handler.handle(request(2, [
-                .text("com.apple.print.preset.Orientation..n.", String(orientation)),
-                .boolean("com.apple.print.PrintSettings.PMCopyCollate..b.", collate)
+                .integer("orientation-requested", orientation, tag: 0x23),
+                .text("multiple-document-handling", collate ? "separate-documents-collated-copies" : "separate-documents-uncollated-copies")
             ], document: Data("%PDF-fixture".utf8)))
             XCTAssertEqual(response.code, 0)
             let settings = await captures.lastSettings()!
             let job = PrintJob(document: DocumentInfo(title: "fixture", pageCount: 1, byteCount: 12345), settings: settings)
             let fields = V5Wire.createFields(job: job, credentials: Credentials(username: "fixture", password: "unused"),
                 password: "fixture-encrypted", identity: ClientIdentity(ip: "127.0.0.1", mac: "", host: "test"))
-            XCTAssertEqual(fields["direction"] as? Int, orientation)
+            XCTAssertEqual(fields["direction"] as? Int, orientation == 4 ? 2 : 1)
             XCTAssertEqual(fields["iscollate"] as? Int, collate ? 1 : 0)
             XCTAssertEqual(fields["filesize"] as? Int64, 12345)
             XCTAssertEqual(fields["directprintid"] as? Int, -1)
         }
-        let malformed = await handler.handle(request(2, [.text("Collate", "unsupported")], document: Data("%PDF-fixture".utf8)))
+        let malformed = await handler.handle(request(2, [.text("sheet-collate", "unsupported")], document: Data("%PDF-fixture".utf8)))
         XCTAssertNotEqual(malformed.code, 0)
         let count = await captures.count()
         XCTAssertEqual(count, 2)

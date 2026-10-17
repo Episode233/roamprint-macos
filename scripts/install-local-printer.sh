@@ -102,8 +102,7 @@ if [[ "$printer_exists" != true ]]; then
     # Mark before invoking lpadmin, so a partially created queue is also rolled back.
     printer_created=true
 fi
-# Discover capabilities over IPP. Update legacy queues in place, preserving jobs;
-# do not supply a custom PPD (-P), which CUPS has deprecated.
+# Discover capabilities over IPP and apply them to this queue.
 /usr/bin/sudo /usr/sbin/lpadmin -p ZGCAxZGCIprinter -E \
     -D "ZGCAxZGCI printer" -L "提交到平台后刷卡取件" \
     -v ipp://127.0.0.1:19963/ipp/print -m everywhere -o printer-is-shared=false

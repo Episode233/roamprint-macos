@@ -43,7 +43,7 @@ API 基址为 `/xzentprint/services`，全部 POST JSON。响应兼容 `Code` �
 
 V5 默认 key 为 `xz!@#$%^&&*()?`。原程序先解码 `SRNyJUAWdipHVBkZQGw=`，再与 `1iSec2Star3` 循环 XOR 得到它。这个 key 来自原客户端，不是用户账号密码；企业若修改了服务器 key，此版本会被拒绝，需要补充对应配置。密码使用 Twofish128 ECB；输入 key 原始字节 `b5000000c7000000c2000000bc000000`。新实现通过公开 Twofish 向量及独立 libgcrypt 样本核对，但没有执行原程序端到端密码验证。
 
-份数、单双面、纸型、彩色值来自原包 `Library/Printers/xzvp/printer_param.json`。纸张代码 A4=9、A3=8、A5=11、Letter=1、Legal=5；颜色黑白=1/彩色=2；单双面=1/2/3；自动纸盒=1000。原 Mac 后端将 `com.apple.print.preset.Orientation..n.` 的 1 写成纵向 1，其余写成横向 2；将 `com.apple.print.PrintSettings.PMCopyCollate..b.` 的 false 写成 0，其余写成 1。新 IPP 接收器兼容这两个名称，并拒绝格式异常的值。标准 IPP 方向、sheet-collate 参数仍优先。file_size 直接累计保存的字节数，创建接口原样改名为 filesize；新实现也按字节提交。原 Mac 创建流程的 A3/A4/其他页数、黑白页数、彩色页数及 jobtype 均固定 0。新实现提交已识别的 A3/A4/其他页数，其余仍为 0；无法识别的原文件页数为 0，交由平台处理，实际行为需内网验证。
+份数、单双面、纸型、彩色值来自原包 `Library/Printers/xzvp/printer_param.json`。纸张代码 A4=9、A3=8、A5=11、Letter=1、Legal=5；颜色黑白=1/彩色=2；单双面=1/2/3；自动纸盒=1000。原 Mac 后端将 `com.apple.print.preset.Orientation..n.` 的 1 写成纵向 1，其余写成横向 2；将 `com.apple.print.PrintSettings.PMCopyCollate..b.` 的 false 写成 0，其余写成 1。新接收器仅从标准 IPP 的 orientation-requested、multiple-document-handling、sheet-collate 获取方向与逐份设置，再转换为平台字段，不保留旧后端的专有参数解析。file_size 直接累计保存的字节数，创建接口原样改名为 filesize；新实现也按字节提交。原 Mac 创建流程的 A3/A4/其他页数、黑白页数、彩色页数及 jobtype 均固定 0。新实现提交已识别的 A3/A4/其他页数，其余仍为 0；无法识别的原文件页数为 0，交由平台处理，实际行为需内网验证。
 
 ## 新实现选择与未验证边界
 
@@ -54,5 +54,5 @@ V5 默认 key 为 `xz!@#$%^&&*()?`。原程序先解码 `SRNyJUAWdipHVBkZQGw=`�
 - 原程序会在部分 token 错误下刷新重试，并记录上传失败状态。此版不自动重试创建/确认请求，也不自动重新创建已分配作业号的任务；任何无法确认的结果都保留文档并要求查询平台。
 - 当前仅 V5 平台账号；域登录、项目计费、二维码、V6、消息通知及强制更新未实现，用户提供的 Windows 配置未要求这些功能。
 - 本地队列使用 `lpadmin -m everywhere` 根据 IPP 能力自动配置，不再依赖项目 PPD，不宣称 IPP Everywhere 或 AirPrint 认证。仅通告 PDF，避免通告 `application/vnd.cups-pdf` 后使 macOS 跳过本地排版。五种纸张通过嵌套 `media-col` 集合描述，颜色、双面、份数等通过标准 IPP 属性传递。直接导入原文件的格式范围不受此限制。
-- 本地收集器不自行改变 PDF 内容，显式的 page-ranges 或 number-up>1 仍拒绝；macOS 应先完成选页/多版排版。CI 使用实际 CUPS 队列和打包后的服务验证能力发现、打印参数、选页/多版及旧队列原位迁移，全程只创建本地待提交记录。
+- 本地收集器不自行改变 PDF 内容，显式的 page-ranges 或 number-up>1 仍拒绝；macOS 应先完成选页/多版排版。CI 使用实际 CUPS 队列和打包后的服务验证能力发现、打印参数及选页/多版，全程只创建本地待提交记录。项目不保留 PPD 文件和旧 PPD 迁移测试。
 - macOS 15 ARM64 的实际编译、测试和 PKG 打包已在 GitHub 通过；新免驱路径在 macOS 27 上的实际表现及内网提交、刷卡取件仍需验证。此开发主机不能访问 `10.1.8.5`。

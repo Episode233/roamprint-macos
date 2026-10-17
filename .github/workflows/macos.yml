@@ -78,7 +78,7 @@ jobs:
           mkdir -p dist
           bash "$ROAMPRINT_PROJECT_DIR/scripts/build-macos.sh" 2>&1 | tee dist/build.log
 
-      - name: Verify driverless printing and legacy queue migration
+      - name: Verify driverless printing
         run: |
           python3 -u "$ROAMPRINT_PROJECT_DIR/tools/test-driverless-macos.py" \
             "dist/ZGCAxZGCI printer.app" 2>&1 | tee -a dist/build.log

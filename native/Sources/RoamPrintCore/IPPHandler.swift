@@ -112,7 +112,7 @@ public actor IPPHandler {
     }
     private func format(_ request: IPPMessage) throws {
         if let raw = request.value("document-format")?.string,
-           !["application/pdf", "application/vnd.cups-pdf", "application/octet-stream"].contains(raw) {
+           !["application/pdf", "application/octet-stream"].contains(raw) {
             throw PrintError.invalidDocument("本地收集队列只支持 PDF，不能接收该文档格式。")
         }
         if let compression = request.value("compression")?.string, compression != "none" {
@@ -125,18 +125,18 @@ public actor IPPHandler {
             guard let copies = attr.integer else { throw PrintError.invalidDocument("份数格式错误。") }
             result.copies = copies
         }
-        if let color = request.value("print-color-mode")?.string ?? request.value("ColorModel")?.string {
-            switch color.lowercased() {
-            case "monochrome", "gray", "grayscale", "black": result.color = .gray
-            case "color", "rgb": result.color = .color
+        if let color = request.value("print-color-mode")?.string {
+            switch color {
+            case "monochrome": result.color = .gray
+            case "color": result.color = .color
             default: throw PrintError.invalidDocument("不支持的颜色参数。")
             }
         }
-        if let sides = request.value("sides")?.string ?? request.value("Duplex")?.string {
+        if let sides = request.value("sides")?.string {
             switch sides {
-            case "one-sided", "None": result.duplex = .single
-            case "two-sided-long-edge", "DuplexNoTumble": result.duplex = .longEdge
-            case "two-sided-short-edge", "DuplexTumble": result.duplex = .shortEdge
+            case "one-sided": result.duplex = .single
+            case "two-sided-long-edge": result.duplex = .longEdge
+            case "two-sided-short-edge": result.duplex = .shortEdge
             default: throw PrintError.invalidDocument("不支持的单双面参数。")
             }
         }
@@ -146,26 +146,11 @@ public actor IPPHandler {
             }
             result.collate = handling != "separate-documents-uncollated-copies"
         }
-        // The original macOS backend also accepts Apple's preset attribute names.
-        if let attr = request.value("com.apple.print.PrintSettings.PMCopyCollate..b.") ?? request.value("Collate") {
-            if attr.tag == 0x22, attr.value == Data([0]) || attr.value == Data([1]) {
-                result.collate = attr.value == Data([1])
-            } else if let collate = attr.string?.lowercased(), ["true", "false"].contains(collate) {
-                result.collate = collate == "true"
-            } else { throw PrintError.invalidDocument("不支持的份数排列方式。") }
-        }
         if let collate = request.value("sheet-collate")?.string {
             guard ["collated", "uncollated"].contains(collate) else {
                 throw PrintError.invalidDocument("不支持的份数排列方式。")
             }
             result.collate = collate == "collated"
-        }
-        if let attr = request.value("com.apple.print.preset.Orientation..n.") {
-            let orientation = attr.tag == 0x21 ? attr.integer : attr.string.flatMap(Int.init)
-            guard let orientation, [1, 2].contains(orientation) else {
-                throw PrintError.invalidDocument("不支持的打印方向。")
-            }
-            result.landscape = orientation == 2
         }
         if let attr = request.value("orientation-requested") {
             guard let orientation = attr.integer, (3...6).contains(orientation) else {
@@ -173,7 +158,7 @@ public actor IPPHandler {
             }
             result.landscape = orientation == 4 || orientation == 5
         }
-        var requestedMedia = request.value("media")?.string ?? request.value("PageSize")?.string
+        var requestedMedia = request.value("media")?.string
         if requestedMedia == nil, request.value("media-col") != nil {
             var member = "", width: Int?, height: Int?
             for attr in request.attributes where attr.name == "media-col" {
@@ -184,21 +169,19 @@ public actor IPPHandler {
                 }
             }
             switch (width, height) {
-            case (21000?, 29700?): requestedMedia = "A4"
-            case (29700?, 42000?): requestedMedia = "A3"
-            case (14800?, 21000?): requestedMedia = "A5"
-            case (21590?, 27940?): requestedMedia = "Letter"
-            case (21590?, 35560?): requestedMedia = "Legal"
+            case (21000?, 29700?): requestedMedia = "iso_a4_210x297mm"
+            case (29700?, 42000?): requestedMedia = "iso_a3_297x420mm"
+            case (14800?, 21000?): requestedMedia = "iso_a5_148x210mm"
+            case (21590?, 27940?): requestedMedia = "na_letter_8.5x11in"
+            case (21590?, 35560?): requestedMedia = "na_legal_8.5x14in"
             default: throw PrintError.invalidDocument("不支持的纸型尺寸。")
             }
         }
         if let media = requestedMedia {
             let map: [String: (Int, String)] = [
-                "A4": (9, "A4"), "iso_a4_210x297mm": (9, "A4"),
-                "A3": (8, "A3"), "iso_a3_297x420mm": (8, "A3"),
-                "A5": (11, "A5"), "iso_a5_148x210mm": (11, "A5"),
-                "Letter": (1, "Letter"), "na_letter_8.5x11in": (1, "Letter"),
-                "Legal": (5, "Legal"), "na_legal_8.5x14in": (5, "Legal")
+                "iso_a4_210x297mm": (9, "A4"), "iso_a3_297x420mm": (8, "A3"),
+                "iso_a5_148x210mm": (11, "A5"), "na_letter_8.5x11in": (1, "Letter"),
+                "na_legal_8.5x14in": (5, "Legal")
             ]
             guard let paper = map[media] else { throw PrintError.invalidDocument("不支持的纸型。") }
             result.paperCode = paper.0; result.paperName = paper.1
