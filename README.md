@@ -23,7 +23,7 @@
 
 ## GitHub 云端构建，无需本地开发环境
 
-现有仓库已成功完成 [macOS ARM64 构建](https://github.com/Episode233/roamprint-macos/actions/runs/38999830857)。可在最新成功的运行中下载 [ZGCAxZGCI printer-arm64 安装包](https://github.com/Episode233/roamprint-macos/actions/runs/38999830857/artifacts/12089150223)，解压后安装 `ZGCAxZGCI printer-1.0.0-arm64.pkg`。下载需登录 GitHub，产物保留 30 天；过期后可在 Actions 重新运行构建。现有仓库直接维护展开的源码，无需再上传源码 ZIP。
+现有仓库已成功完成 [macOS ARM64 构建](https://github.com/Episode233/roamprint-macos/actions/runs/39000735253)。可在最新成功的运行中下载 [ZGCAxZGCI printer-arm64 安装包](https://github.com/Episode233/roamprint-macos/actions/runs/39000735253/artifacts/12089181743)，解压后安装 `ZGCAxZGCI printer-1.0.0-arm64.pkg`。下载需登录 GitHub，产物保留 30 天；过期后可在 Actions 重新运行构建。现有仓库直接维护展开的源码，无需再上传源码 ZIP。
 
 如需在另一个仓库使用可见文件构建包：
 
@@ -44,6 +44,7 @@
 - [安装、使用与验收](docs/install.md)
 - [V5 协议与 REA 证据](docs/protocol.md)
 - [验证记录](docs/validation.md)
+- [历次修改的旧代码检查](docs/code-audit.md)
 - 源码：`native/`
 
 维护者可在有 Swift 6 和系统 curl 的环境中运行 `cd native && swift test`；Linux 也可使用：

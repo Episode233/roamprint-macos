@@ -2,6 +2,16 @@
 
 最新验证日期：2026-10-17；以下历史记录保留各次实际验证日期。目标是 Apple Silicon 上保持“系统打印菜单 → 本地待提交 → 企业平台 → 刷卡释放”，不使用 Rosetta。
 
+## 1.0.0 历次修改的旧代码审查
+
+2026-10-17，[GitHub macOS 15 ARM64 构建 39000735253](https://github.com/Episode233/roamprint-macos/actions/runs/39000735253) 已成功，对应源码提交 `532fbc33bf196faa022d5222f3e97091182284ee`。[安装包](https://github.com/Episode233/roamprint-macos/actions/runs/39000735253/artifacts/12089181743) 仍为 `ZGCAxZGCI printer-1.0.0-arm64.pkg`；内部构建号保持 `3`。
+
+本轮检查覆盖 17 个 Swift 源文件、C 协议依赖、资源、安装/构建脚本、工作流、测试及工作区交付物。删除了未调用的表单编码器、URLSession 上传入口、V6/域登录占位字段及检查、未读取的 IPP 捕获编号副本和刷新任务句柄；详情和逐项核对见 [旧代码检查](code-audit.md)。本地工作区的废弃 Web 原型及旧名称、旧版本构建包也已清理。
+
+Linux 42 项核心测试通过。macOS 完整测试包含扩展的真实钥匙串测试：直接写入带 kind 字段的既有记录后，新实现仍可读取账号密码，并可继续更新和删除。5 项界面模型测试、真实 IPP/CUPS 打印、发布编译、ARM64 架构检查、签名校验、PKG 打包及产物上传均通过。
+
+当前源码、工作区镜像和源码构建包同步，源码 ZIP 不含隐藏文件、PPD 或 Web 原型；刷卡任务参数 `directprintid=-1`、应用/队列显示名称、登录 service 和作业目录保持不变。本次未连接真实企业平台，现场刷卡结果仍不属于已验证范围。
+
 ## 1.0.0 清理旧 PPD 与参数兼容分支
 
 2026-10-17，[GitHub macOS 15 ARM64 构建 38999830857](https://github.com/Episode233/roamprint-macos/actions/runs/38999830857) 已成功，对应源码提交 `a8a585f09ef4219652959eeeda3794fb1f3997f4`。[安装包](https://github.com/Episode233/roamprint-macos/actions/runs/38999830857/artifacts/12089150223) 仍为 `ZGCAxZGCI printer-1.0.0-arm64.pkg`，内部构建号仍为 `3`。
